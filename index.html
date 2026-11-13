@@ -120,6 +120,7 @@ legend{font-weight:500;font-size:.93rem;padding:0;margin-bottom:6px}
 .pill>span,.just{text-align:justify;hyphens:none;-webkit-hyphens:none}
 .hero,main>.card:not(.layer){position:relative;border-radius:0}
 .hero{border:1px solid var(--line);padding:26px 24px}
+.hero .lead{text-align:justify;text-align-last:center;hyphens:none;-webkit-hyphens:none}
 .hero::before,.hero::after,main>.card:not(.layer)::before,main>.card:not(.layer)::after{content:"";position:absolute;width:24px;height:24px;border:3px solid var(--trim);pointer-events:none}
 .hero::before,main>.card:not(.layer)::before{left:-2px;top:-2px;border-right:0;border-bottom:0}
 .hero::after,main>.card:not(.layer)::after{right:-2px;bottom:-2px;border-left:0;border-top:0}
@@ -586,7 +587,7 @@ function vInicio(){
  return `<figure><canvas id="carta" role="img" aria-label="Carta ilustrativa com hipsometria, curvas de nível, hidrografia e quadriculado"></canvas>
  <figcaption>Ilustração: relevo sintético com hipsometria, sombreamento, curvas de nível, hidrografia e quadriculado. Não representa área real.</figcaption></figure>
  <div class="hero"><div class="embw">${EMB.replace('class="emb"','class="emb big"')}</div><div class="stack"><h1>O pedido parte da necessidade de conhecimento, não do tipo de produto</h1>
- <p class="lead">O solicitante responde em linguagem corrente. O aplicativo converte as respostas em requisitos técnicos e entrega ao analista uma ficha de demanda pronta para o início do trabalho.</p></div></div>
+ <p class="lead">O solicitante responde ao questionário apresentado. O aplicativo converte as respostas em requisitos técnicos e fornece ao analista uma ficha de demanda que orienta o trabalho de produção.</p></div></div>
  <div class="modes">
   <a class="mode" href="#solicitante"><h2>Solicitante</h2><span>Necessito de um produto e vou formalizar o pedido. Oito passos.</span></a>
   ${PERFIL==='analista'?'<a class="mode" href="#analista"><h2>Analista</h2><span>Recebi um pedido e vou carregar a ficha de demanda, o roteiro e o parecer de viabilidade.</span></a>':''}
