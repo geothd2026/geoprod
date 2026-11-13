@@ -1,6 +1,6 @@
 {
- "name": "Pedido de Produto de Geointeligência",
- "short_name": "Pedido GEOINT",
+ "name": "Demanda de Geointeligência - Solicitante",
+ "short_name": "GEOINT Solicitante",
  "lang": "pt-BR",
  "start_url": "./",
  "scope": "./",
