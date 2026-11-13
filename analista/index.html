@@ -117,7 +117,12 @@ legend{font-weight:500;font-size:.93rem;padding:0;margin-bottom:6px}
 .opt span{display:flex;flex-direction:column}
 .opt small{color:var(--muted);font-size:.83rem}
 .opt img,.opt canvas.thumb{width:112px;height:84px;object-fit:cover;border:1px solid var(--ink);border-radius:2px;flex:none;background:var(--sunken)}
-.pill>span{text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+.pill>span,.just{text-align:justify;hyphens:none;-webkit-hyphens:none}
+.hero,main>.card:not(.layer){position:relative;border-radius:0}
+.hero{border:1px solid var(--line);padding:26px 24px}
+.hero::before,.hero::after,main>.card:not(.layer)::before,main>.card:not(.layer)::after{content:"";position:absolute;width:24px;height:24px;border:3px solid var(--trim);pointer-events:none}
+.hero::before,main>.card:not(.layer)::before{left:-2px;top:-2px;border-right:0;border-bottom:0}
+.hero::after,main>.card:not(.layer)::after{right:-2px;bottom:-2px;border-left:0;border-top:0}
 .ver{font:500 .66rem var(--mono);letter-spacing:.08em;border:1px solid var(--trim);color:var(--trim);padding:2px 6px;border-radius:3px;white-space:nowrap}
 [data-perfil="solicitante"] .ver::after{content:" · Solicitante"}
 [data-perfil="analista"] .ver::after{content:" · Analista"}
@@ -738,7 +743,7 @@ function vBib(){
  <section class="card"><h2>Manuais</h2><div>${li(man)}</div><p class="hint">Confirmar a edição vigente antes de citar.</p></section>
  <section class="card"><h2>Publicações estrangeiras</h2><div>${li(ext)}</div></section>
  <section class="card"><h2>Artigos</h2><div>${li(art)}</div></section>
- <section class="card"><h2>Créditos das imagens</h2><p class="muted">Emblema, fundos de tela, carta com relevo, modelos tridimensionais do terreno e realces de água e de vegetação: produção do autor. Imagem de radar e realce de terreno exposto: contêm dados Copernicus Sentinel modificados; os topônimos sobre as imagens são do OpenStreetMap. Imagens de instalação, embarcação, aeronave destruída e sensor termal: obtidas em operação, não classificadas, de uso autorizado. Imagem anotada de avaliação de danos: Departamento de Defesa dos EUA. Mapa de calor de atividades físicas: © Strava 2017, Mapbox, OpenStreetMap, DigitalGlobe. As demais ilustrações são sintéticas, desenhadas para este aplicativo, e não representam áreas reais.</p></section>`;
+ <section class="card"><h2>Créditos das imagens</h2><p class="muted just">Emblema, fundos de tela, carta com relevo, modelos tridimensionais do terreno e realces de água e de vegetação: produção do autor. Imagem de radar e realce de terreno exposto: contêm dados Copernicus Sentinel modificados; os topônimos sobre as imagens são do OpenStreetMap. Imagens de instalação, embarcação, aeronave destruída e sensor termal: obtidas em operação, não classificadas, de uso autorizado. Imagem anotada de avaliação de danos: Departamento de Defesa dos EUA. Mapa de calor de atividades físicas: © Strava 2017, Mapbox, OpenStreetMap, DigitalGlobe. As demais ilustrações são sintéticas, desenhadas para este aplicativo, e não representam áreas reais.</p></section>`;
 }
 
 /* ---------- render e eventos ---------- */
