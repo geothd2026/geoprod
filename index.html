@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-skin="tatico" data-perfil="solicitante">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pedido de Produto de Geointeligência</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="icon" href="img/icon-192.png">
+<meta name="theme-color" content="#081110">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pedido GEOINT">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: coluna única de trabalho (máx. 860px) sob barra preta-oliva; cores de carta topográfica
+   por função: verde-oliva = ação, azul = hidrografia/ligações, sépia = relevo/conceitos, verde = vegetação/conforme. */
+:root{
+  --bg:#e8eae0; --surface:#fbfbf6; --sunken:#f0f1e8; --ink:#14170f; --muted:#565b4a; --line:#c8ccba;
+  --bar:#1b1f10; --bar-ink:#eceedd; --bar-muted:#aab08f;
+  --accent:#4b5320; --accent-ink:#ffffff; --accent-soft:#e0e4cc;
+  --hidro:#1c6a96; --veg:#4f7f3f; --veg-soft:#e2edd9; --relevo:#8a5a2b; --relevo-soft:#f3e8d7;
+  --warn:#8a5200; --warn-soft:#fbefd4; --crit:#a3271f; --crit-soft:#f8e1dd;
+  --trim:#aeb968;
+  --display:"IBM Plex Sans Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10120c; --surface:#1a1d13; --sunken:#14170f; --ink:#e8eadd; --muted:#a2a78f; --line:#30351f;
+    --bar:#0b0d07; --bar-ink:#eceedd; --bar-muted:#9aa07f;
+    --accent:#aeb968; --accent-ink:#151908; --accent-soft:#2a2f16;
+    --hidro:#74b6db; --veg:#93c27f; --veg-soft:#1b2a16; --relevo:#d3a16b; --relevo-soft:#2c2315;
+    --warn:#e3ad52; --warn-soft:#30260f; --crit:#f08e84; --crit-soft:#351a17;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10120c; --surface:#1a1d13; --sunken:#14170f; --ink:#e8eadd; --muted:#a2a78f; --line:#30351f;
+  --bar:#0b0d07; --bar-ink:#eceedd; --bar-muted:#9aa07f;
+  --accent:#aeb968; --accent-ink:#151908; --accent-soft:#2a2f16;
+  --hidro:#74b6db; --veg:#93c27f; --veg-soft:#1b2a16; --relevo:#d3a16b; --relevo-soft:#2c2315;
+  --warn:#e3ad52; --warn-soft:#30260f; --crit:#f08e84; --crit-soft:#351a17;
+  color-scheme:dark;
+}
+:root[data-skin="marinho"]{--bg:#e9eef3;--surface:#fbfcfe;--sunken:#eef2f6;--ink:#0f1b2d;--muted:#4d5b6e;--line:#c5cfdb;--bar:#0c2340;--bar-ink:#f2f5f9;--bar-muted:#9fb2c8;--accent:#12406e;--accent-ink:#ffffff;--accent-soft:#dbe6f2;--hidro:#1c6a96;--veg:#3f7a4a;--veg-soft:#e0eee2;--relevo:#8a6400;--relevo-soft:#fbf1d0;--trim:#e3b324;}
+@media (prefers-color-scheme: dark){:root[data-skin="marinho"]:not([data-theme="light"]){--bg:#0a1422;--surface:#111e31;--sunken:#0d1828;--ink:#e6ecf4;--muted:#97a6ba;--line:#24344b;--bar:#060d18;--bar-ink:#f2f5f9;--bar-muted:#8fa2b9;--accent:#f0c23a;--accent-ink:#1a1400;--accent-soft:#2b2a17;--hidro:#6fb4e6;--veg:#84c892;--veg-soft:#14281b;--relevo:#f0c23a;--relevo-soft:#2a2410;--trim:#f0c23a;}}
+:root[data-skin="marinho"][data-theme="dark"]{--bg:#0a1422;--surface:#111e31;--sunken:#0d1828;--ink:#e6ecf4;--muted:#97a6ba;--line:#24344b;--bar:#060d18;--bar-ink:#f2f5f9;--bar-muted:#8fa2b9;--accent:#f0c23a;--accent-ink:#1a1400;--accent-soft:#2b2a17;--hidro:#6fb4e6;--veg:#84c892;--veg-soft:#14281b;--relevo:#f0c23a;--relevo-soft:#2a2410;--trim:#f0c23a;}
+:root[data-skin="tatico"]{--bg:#e6ecea;--surface:#f9fbfa;--sunken:#edf2f0;--ink:#0f1c1a;--muted:#4c5e5a;--line:#c2d0cc;--bar:#0e2622;--bar-ink:#e8f3f0;--bar-muted:#94b3ac;--accent:#0b6b63;--accent-ink:#ffffff;--accent-soft:#d6ebe7;--hidro:#0f6a8c;--veg:#3f7a4a;--veg-soft:#deeee0;--relevo:#8a5a2b;--relevo-soft:#f3e8d7;--trim:#1fb5a6;}
+@media (prefers-color-scheme: dark){:root[data-skin="tatico"]:not([data-theme="light"]){--bg:#081110;--surface:#0f1b19;--sunken:#0b1514;--ink:#e2efec;--muted:#8fa8a2;--line:#1f332f;--bar:#040a09;--bar-ink:#e2efec;--bar-muted:#7f9a94;--accent:#3fd0c0;--accent-ink:#04201c;--accent-soft:#12302c;--hidro:#6cc4e8;--veg:#86cf96;--veg-soft:#12281a;--relevo:#dba36a;--relevo-soft:#2a2115;--trim:#3fd0c0;}}
+:root[data-skin="tatico"][data-theme="dark"]{--bg:#081110;--surface:#0f1b19;--sunken:#0b1514;--ink:#e2efec;--muted:#8fa8a2;--line:#1f332f;--bar:#040a09;--bar-ink:#e2efec;--bar-muted:#7f9a94;--accent:#3fd0c0;--accent-ink:#04201c;--accent-soft:#12302c;--hidro:#6cc4e8;--veg:#86cf96;--veg-soft:#12281a;--relevo:#dba36a;--relevo-soft:#2a2115;--trim:#3fd0c0;}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--body);-webkit-text-size-adjust:100%}
+h1,h2,h3{font-family:var(--display);font-weight:600;line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:1.85rem} h2{font-size:1.3rem} h3{font-size:1.05rem}
+p{margin:0}
+a{color:var(--hidro)}
+.top{position:sticky;top:0;z-index:5;background:var(--bar);color:var(--bar-ink);border-bottom:3px solid var(--trim)}
+.top-in{max-width:860px;margin:0 auto;padding:10px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:1.05rem;margin-right:auto;letter-spacing:.02em;text-transform:uppercase}
+.emb{width:42px;height:42px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.emb .n{stroke-width:1.1;opacity:.75}
+.emb .f{fill:currentColor;stroke:none}
+.emb .t{fill:var(--trim);stroke:none}
+.emb.big{width:136px;height:136px;color:var(--ink)}
+.embw{display:flex;flex-direction:column;align-items:center;gap:2px;font:600 .78rem var(--mono);letter-spacing:.22em;color:var(--muted)}
+.hero{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.hero>.stack{flex:1 1 320px}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav a{padding:6px 10px;border-radius:4px;text-decoration:none;color:var(--bar-muted);font-weight:500;font-size:.92rem}
+nav a[aria-current="page"]{background:var(--bar-ink);color:var(--bar)}
+.notice{background:var(--sunken);border-bottom:1px solid var(--line);font-size:.8rem;color:var(--muted)}
+.notice div{max-width:860px;margin:0 auto;padding:6px 16px}
+#bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#bg{display:none}
+#bgimg{position:fixed;inset:0;z-index:0;pointer-events:none;background:url(img/fundo-claro.jpg) right bottom/cover no-repeat;mix-blend-mode:multiply}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #bgimg{background-image:url(img/fundo-escuro.jpg);mix-blend-mode:screen}}
+:root[data-theme="dark"] #bgimg{background-image:url(img/fundo-escuro.jpg);mix-blend-mode:screen}
+.notice,main{position:relative;z-index:1}
+main{max-width:860px;margin:0 auto;padding:24px 16px 64px;display:flex;flex-direction:column;gap:20px}
+.lead{color:var(--muted);max-width:65ch}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.row>*{flex:1 1 220px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:14px}
+figure{margin:0;display:flex;flex-direction:column;gap:6px}
+#carta{display:block;width:100%;height:210px;border:1px solid var(--ink);border-radius:2px;background:#cfd6b8}
+figcaption{font-size:.8rem;color:var(--muted)}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.mode{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:8px;text-decoration:none;color:inherit}
+.mode:hover{border-color:var(--accent)}
+.mode span{color:var(--muted);font-size:.93rem}
+.flow{display:flex;gap:8px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);align-items:center;justify-content:space-between}
+@media (max-width:760px){.flow{justify-content:center}}
+.flow b{color:var(--ink);font-weight:500;background:var(--surface);border:1px solid var(--line);padding:4px 10px;border-radius:4px}
+label.f{display:flex;flex-direction:column;gap:5px;font-weight:500;font-size:.93rem}
+label.f small,.hint{font-weight:400;color:var(--muted);font-size:.84rem}
+input[type=text],input[type=date],input[type=number],textarea,select{font:inherit;color:var(--ink);background:var(--sunken);border:1px solid var(--line);border-radius:4px;padding:9px 10px;width:100%}
+textarea{min-height:76px;resize:vertical}
+textarea.code{font:400 .8rem/1.45 var(--mono);min-height:170px}
+:focus-visible{outline:2px solid var(--hidro);outline-offset:2px}
+fieldset{border:0;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+legend{font-weight:500;font-size:.93rem;padding:0;margin-bottom:6px}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:4px;background:var(--sunken);cursor:pointer}
+.opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.opt input{margin-top:4px;accent-color:var(--accent)}
+.opt span{display:flex;flex-direction:column}
+.opt small{color:var(--muted);font-size:.83rem}
+.opt img,.opt canvas.thumb{width:112px;height:84px;object-fit:cover;border:1px solid var(--ink);border-radius:2px;flex:none;background:var(--sunken)}
+.pill>span{text-align:justify;hyphens:auto;-webkit-hyphens:auto}
+.ver{font:500 .66rem var(--mono);letter-spacing:.08em;border:1px solid var(--trim);color:var(--trim);padding:2px 6px;border-radius:3px;white-space:nowrap}
+[data-perfil="solicitante"] .ver::after{content:" · Solicitante"}
+[data-perfil="analista"] .ver::after{content:" · Analista"}
+[data-perfil="solicitante"] nav a[href="#analista"]{display:none}
+.pfs{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.pf{flex:1 1 220px;max-width:420px;align-items:center;gap:4px;text-align:center}
+.pf img,.pf canvas{display:block;width:100%;height:auto;border:1px solid var(--ink);border-radius:2px}
+.pf small{color:var(--muted);font-size:.78rem}
+details summary{cursor:pointer;font-weight:500;font-size:.9rem;color:var(--hidro)}
+details textarea{margin-top:8px}
+.medidas{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.medidas dl{flex:1 1 200px;font:400 .86rem var(--mono)}
+.mxq{display:grid;grid-template-columns:64px 1fr 1fr;gap:4px;font-size:.84rem;max-width:620px}
+.mxq div{display:flex;flex-direction:column;gap:4px;padding:10px;border:1px solid var(--line);background:var(--sunken);border-radius:3px}
+.mxq div b{font:600 1.15rem var(--mono)}
+.mxq div strong{font-weight:600}
+.mxq div.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.mxq span{display:grid;place-items:center;text-align:center;color:var(--muted);font-size:.78rem;padding:4px}
+.papel{width:100%;max-width:300px;height:auto;color:var(--ink)}
+.papel rect{fill:var(--sunken);stroke:currentColor;stroke-width:1}
+.papel rect.on{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.papel rect.frame{fill:none}
+.papel rect.frame.on{fill:none;stroke-width:4}
+.papel text{font:500 11px var(--mono);fill:currentColor}
+.opts2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px}
+.tag{font:500 .72rem var(--mono);padding:2px 7px;border-radius:3px;border:1px solid var(--line);color:var(--muted);margin-left:auto;font-style:normal;white-space:nowrap}
+.btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button{font:500 .95rem var(--body);border-radius:4px;padding:9px 16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+button.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button.sm{padding:5px 10px;font-size:.85rem}
+button:disabled{opacity:.5;cursor:default}
+.save{display:none}
+body.can-save .save{display:inline-block}
+.steps{display:flex;gap:4px;flex-wrap:wrap;list-style:none;margin:0;padding:0;font-size:.8rem}
+.steps li{padding:4px 9px;border-radius:3px;border:1px solid var(--line);color:var(--muted);background:var(--surface)}
+.steps li.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.steps li.done{color:var(--accent);border-color:var(--accent)}
+.pill{background:var(--relevo-soft);border-left:4px solid var(--relevo);padding:12px 14px;font-size:.92rem;display:flex;flex-direction:column;gap:4px}
+.pill b{font-family:var(--display);color:var(--relevo);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase}
+.alert{padding:10px 12px;font-size:.92rem;border-left:4px solid var(--warn);background:var(--warn-soft)}
+.alert.crit{border-color:var(--crit);background:var(--crit-soft)}
+.alert.ok{border-color:var(--veg);background:var(--veg-soft)}
+dl.kv{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:6px 14px;margin:0;font-size:.93rem}
+dl.kv dt{color:var(--muted)}
+dl.kv dd{margin:0;overflow-wrap:anywhere}
+.layer{border-left:5px solid var(--hidro)}
+.layer.l2{border-left-color:var(--relevo)}
+.layer.l3{border-left-color:var(--veg)}
+.layer>h2 small{font:500 .72rem var(--mono);color:var(--muted);display:block;margin-bottom:4px;letter-spacing:.04em}
+.prio{display:inline-flex;align-items:center;gap:8px;font-weight:600}
+.prio i{font:600 1rem var(--mono);font-style:normal;width:30px;height:30px;border-radius:3px;display:grid;place-items:center;background:var(--ink);color:var(--surface)}
+ol.rot{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;counter-reset:r}
+ol.rot li{counter-increment:r}
+ol.rot .opt span b::before{content:counter(r) ". ";font-family:var(--mono);color:var(--muted);font-weight:500}
+.sc{display:grid;grid-template-columns:130px 1fr 120px;gap:8px;align-items:center;font-size:.92rem}
+.lib{display:flex;flex-direction:column;gap:4px;padding:12px 0;border-top:1px solid var(--line)}
+.lib:first-of-type{border-top:0}
+.lib code{font:500 .8rem var(--mono);color:var(--muted)}
+.muted{color:var(--muted);font-size:.9rem}
+@media (max-width:480px){h1{font-size:1.5rem}#carta{height:160px}.sc{grid-template-columns:1fr 1fr}.sc>span{grid-column:1/-1;font-weight:500}dl.kv{grid-template-columns:1fr}dl.kv dt{margin-top:6px}}
+@media (prefers-reduced-motion:no-preference){.opt,.mode,button{transition:border-color .15s,background-color .15s}}
+</style>
+</head>
+<body>
+<canvas id="bg" aria-hidden="true"></canvas>
+<div id="bgimg" aria-hidden="true"></div>
+<header class="top"><div class="top-in">
+  <div class="brand"><img class="emb" src="img/emblema.png" alt="">Solicitação de Produtos de Geointeligência<span class="ver">TESTES 0.9</span></div>
+  <nav aria-label="Seções">
+    <a href="#inicio">Início</a><a href="#solicitante">Solicitante</a><a href="#avaliacao">Avaliação</a><a href="#analista">Analista</a><a href="#biblioteca">Biblioteca</a>
+  </nav>
+</div></header>
+<div class="notice"><div>Protótipo de trabalho individual. Não constitui sistema oficial. Nada do que for digitado é transmitido ou armazenado: o pedido existe apenas nesta tela e no arquivo gerado. Empregar somente dados ostensivos.</div></div>
+<main id="app"></main>
+
+<script>
+/* ---------- utilidades ---------- */
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const get=(o,p)=>p.split('.').reduce((a,k)=>a==null?a:a[k],o);
+const set=(o,p,v)=>{const ks=p.split('.'),l=ks.pop();ks.reduce((a,k)=>a[k]??(a[k]={}),o)[l]=v;};
+const iso=d=>d.toISOString().slice(0,10);
+const plus=n=>{const d=new Date();d.setDate(d.getDate()+n);return iso(d);};
+const daysTo=s=>{if(!s)return null;const a=new Date(s+'T00:00:00'),b=new Date();b.setHours(0,0,0,0);return Math.round((a-b)/864e5);};
+const NI='não informado';
+const brDate=s=>s?s.split('-').reverse().join('/'):NI;
+
+/* ---------- dicionários ---------- */
+const USUARIO={decisor:'Comandante, chefe ou diretor (decisor)',em:'Estado-maior ou seção',tropa:'Tropa no terreno',analista:'Outro analista ou agência de Inteligência'};
+const USO={apres:'Apresentação ou briefing',plan:'Planejamento',campo:'Emprego no terreno',tela:'Consulta em tela',anexo:'Anexo a documento'};
+const CONSEQ={decisao:['Decisão ou operação fica sem apoio de Inteligência','alta'],atraso:['O planejamento sofre atraso','alta'],incompleto:['O trabalho fica menos completo, sem prejuízo direto','baixa'],nenhuma:['Sem consequência imediata','baixa']};
+const ONDE={local:'Município ou localidade',ar:'Área de responsabilidade de OM',ponto:'Ponto e raio',eixo:'Itinerário entre dois pontos',kml:'Arquivo KML, remetido em anexo ao pedido',coord:'Coordenadas'};
+const EXT={inst:['Instalação ou quarteirão','1:1.000 a 1:10.000'],cidade:['Bairro ou cidade','1:25.000 a 1:100.000'],regiao:['Vários municípios','1:250.000 a 1:1.000.000'],estado:['Estado ou área maior','1:1.000.000 ou menor']};
+const RAMOS={
+ A:{q:'Conhecer uma área e o que nela existe',p:'Mapa temático',pronto:1},
+ B:{q:'Saber o que existe ou o que ocorre em um local',p:'Análise de imagens',pronto:1},
+ C:{q:'Saber o que mudou em um local',p:'Análise de mudanças no tempo',pronto:1},
+ D:{q:'Saber onde um fenômeno se concentra',p:'Análise de distribuição espacial',pronto:1},
+ E:{q:'Estudar o terreno',p:'Estudo do terreno',pronto:1},
+ F:{q:'Analisar imagens ou vídeos já disponíveis',p:'Análise forense de imagem ou vídeo',pronto:1},
+ N:{q:'Não sei informar',p:'A definir com o analista'}};
+const B_LOCAL={inst:'Instalação',urb:'Área urbana',eixo:'Eixo ou via',rural:'Área rural ou de fronteira',outro:'Outro'};
+const B_SABER={exist:'Existência de algo no local',qtd:'Quantidade',ativ:'Atividade ou funcionamento',acess:'Acessos e entorno',med:'Medidas',danos:'Danos'};
+const B_REC={qualquer:'Qualquer data atende',ano:'Do último ano',mes:'Do último mês',evento:'Posterior a evento específico'};
+const B_DET={bairro:['Bairros e grandes áreas','baixa (até 30 m)'],edif:['Edificações e vias','alta (até 5 m)'],veic:['Viaturas e pequenos objetos','altíssima (abaixo de 1 m)']};
+const F_MAT={foto:'Fotografia',video:'Vídeo',drone:'Imagem de aeronave ou SARP',rede:'Publicação em rede social'};
+const F_ORIG={sim:'Data e local conhecidos',parte:'Conhecidos em parte',nao:'Desconhecidos'};
+const F_SABER={onde:'Local em que foi obtido',quando:'Data e hora em que foi obtido',equip:'Equipamento, armamento ou viatura presentes',pessoas:'Efetivo presente e atividade (descrição)',autent:'Autenticidade do material',med:'Medidas'};
+const FORMATO={tela:['Consulta em tela','PDF'],camadas:['Ligar e desligar camadas','GeoPDF'],earth:['Abrir no Google Earth','KMZ'],sig:['Emprego em SIG','GeoTIFF ou vetor'],impresso:['Impressão','PDF para impressão']};
+const TAM={pasta:['Pasta ou caderneta','A4 ou A3'],mesa:['Mesa de planejamento','A2 ou A1'],parede:['Parede (carta de situação)','A0']};
+const SIGILO={ost:'Ostensivo',rest:'Acesso restrito',def:'A definir pela seção'};
+const A_FIM={orient:'Orientação geral e localização',plan:'Planejamento de operação ou exercício',apres:'Apresentação a autoridade',ctrl:'Controle de área de responsabilidade ou patrimonial',desloc:'Apoio a deslocamento'};
+const A_TEMAS={lim:'Limites e divisas',loc:'Localidades',vias:'Rede viária (rodovias, ferrovias, hidrovias)',aero:'Aeródromos e portos',hidro:'Hidrografia',relevo:'Relevo e altimetria',veg:'Vegetação e uso do solo',infra:'Infraestruturas críticas (energia, comunicações, barragens, dutos)',om:'Organizações militares e áreas patrimoniais',front:'Faixa de fronteira',esp:'Áreas especiais (indígenas, quilombolas, assentamentos, unidades de conservação)',serv:'Serviços públicos (saúde, educação)'};
+const A_FUNDO={simples:'Fundo cartográfico simples',relevo:'Relevo sombreado',imagem:'Imagem de satélite',analista:'A critério do analista'};
+const DADOS_P={nao:'Não',plan:'Sim, planilha com coordenadas',kml:'Sim, arquivo KML',outro:'Sim, em outro formato'};
+const C_TIPO={constr:'Construção ou ampliação de instalações',vias:'Abertura de vias, pistas ou clareiras',veg:'Desmatamento ou alteração da vegetação',agua:'Alagamento ou variação de curso d’água',fogo:'Queimada',meios:'Movimentação de meios (viaturas, embarcações, aeronaves)',danos:'Danos',urb:'Ocupação ou expansão urbana',ns:'Não tenho certeza; desejo saber se houve mudança no local'};
+const C_MODO={unica:'Comparação única entre duas datas',period:'Acompanhamento periódico'};
+const C_FREQ={sem:'Semanal',quinz:'Quinzenal',mens:'Mensal',trim:'Trimestral'};
+const D_FEN={ocorr:'Ocorrências ou incidentes',ilic:'Ilícitos transfronteiriços e ambientais',atores:'Presença ou atividade de atores de interesse',infra:'Infraestruturas ou recursos',civis:'População e considerações civis',outro:'Outro'};
+const D_VER={conc:'Onde se concentra',evol:'Como evoluiu no tempo',rel:'Relação com vias, localidades ou fronteira',vazio:'Áreas sem registro',quant:'Quantitativos por área (município, bairro, área de responsabilidade)'};
+const D_DADOS={coord:'Disponho de planilha com coordenadas',end:'Disponho de planilha com endereços ou localidades',rel:'Disponho apenas de relatórios e documentos',nao:'Não disponho de dados'};
+const D_QTD={p:'Até 100 registros',m:'De 100 a 1.000',g:'Mais de 1.000',ns:'Não sei'};
+const E_FIM={mob:'Mobilidade e restrições ao movimento',corr:'Corredores de mobilidade e vias de acesso',obs:'Observação e campos de tiro a partir de um ponto',cob:'Cobertas e abrigos',obst:'Obstáculos e transposição de curso d’água',zonas:'Zonas de pouso, de lançamento ou de reunião',perfil:'Perfil de itinerário',tres:'Visualização tridimensional do terreno',acid:'Acidentes capitais'};
+const E_MEIO={ape:'A pé',rodas:'Motorizada (sobre rodas)',blind:'Mecanizada ou blindada',aerom:'Aeromóvel',emb:'Embarcada (fluvial)',na:'Não se aplica'};
+const E_EPOCA={seca:'Estação seca',chuva:'Estação chuvosa',atual:'Situação atual',ind:'Indiferente'};
+/* Imagens de exemplo por opção: chave "caminho.valor" -> arquivo em img/. Preenchido quando as imagens ostensivas forem recebidas. */
+const IMG={'req.ramo.A':'carta.jpg','req.ramo.B':'bda.jpg','req.ramo.C':'@mud','req.ramo.D':'@calor','req.ramo.E':'3d.jpg','req.ramo.F':'draga.jpg',
+ 'req.B.detalhe.bairro':'@res30','req.B.detalhe.edif':'@res5','req.B.detalhe.veic':'@res06','req.C.detalhe.bairro':'@res30','req.C.detalhe.edif':'@res5','req.C.detalhe.veic':'@res06',
+ 'req.A.fundo.simples':'@fsimples','req.A.fundo.relevo':'dta.jpg','req.A.fundo.imagem':'s2-realce.jpg'};
+
+const PILLS={
+ pergunta:['Um bom pedido cabe em uma pergunta','"Necessito de um mapa da região" gera retrabalho. "Por qual itinerário uma viatura pesada alcança o ponto X em segurança?" gera um produto.'],
+ oportunidade:['Princípio da oportunidade','O conhecimento só tem valor se chegar a tempo de apoiar a decisão. Informar a data-limite de utilidade, e não apenas a data desejada.'],
+ escala:['Escala grande, área pequena','Escala grande (1:10.000) representa área pequena com muito detalhamento. Escala pequena (1:1.000.000) representa área grande com pouco detalhamento.'],
+ geoint:['O que é Geointeligência','Disciplina da Inteligência Militar que explora e analisa imagens e informações geoespaciais para descrever, avaliar e visualizar feições, fenômenos e atividades localizados no terreno. Relaciona o que foi observado ao local e ao momento.'],
+ niveis:['Detectar, reconhecer, identificar','Detectar é constatar que há algo no local. Reconhecer é definir a classe do objeto. Identificar é definir o tipo exato. Cada nível exige imagem de maior detalhamento que o anterior.'],
+ resolucao:['Resolução espacial','É a dimensão, no terreno, do menor elemento que a imagem registra. Com 30 m distinguem-se bairros; com 5 m, edificações; abaixo de 1 m, viaturas.'],
+ revisita:['Imagem atual nem sempre está disponível','O satélite só retorna ao mesmo ponto após certo intervalo, e a cobertura de nuvens pode inutilizar a passagem. Quanto mais atual e detalhada a imagem solicitada, maior o prazo necessário.'],
+ metadados:['Remeter o arquivo original','O original preserva data, hora e equipamento. Cópias que transitaram por aplicativos de mensagem e redes sociais costumam perder esses dados.'],
+ mapa:['O mapa temático é o principal produto','Representa, sobre a base cartográfica, o resultado da análise de um tema. Informar o tema e a finalidade evita um mapa carregado e de difícil leitura.'],
+ dados:['Sem localização não há análise espacial','Cada registro precisa de coordenada, endereço ou localidade. Planilhas com uma linha por registro e colunas de data e local abreviam o trabalho.'],
+ pitcic:['O estudo do terreno alimenta o PITCIC','Restrições ao movimento, corredores de mobilidade, vias de acesso e acidentes capitais são levantados a partir do terreno. Informar a natureza da tropa e a época do ano muda o resultado.',[['carta3d.jpg','Carta sobre modelo tridimensional do terreno.']]],
+ radar:['O radar obtém imagem à noite e sob nuvens','Quando a atualidade for essencial e houver cobertura de nuvens, o analista pode recorrer à imagem de radar. A leitura é diferente da de uma fotografia: superfícies lisas, como a água, aparecem escuras.',[['s1-radar.jpg','Imagem de radar Sentinel-1.']]],
+ realce:['A mesma imagem pode realçar temas diferentes','A combinação de faixas do sensor destaca água, vegetação ou terreno exposto. É o que permite apontar onde algo mudou.',[['s2-agua.jpg','Realce de água.'],['s2-veg.jpg','Realce de vegetação.']]],
+ termal:['O sensor termal registra calor, não luz','Distingue pessoas, viaturas com motor aquecido e focos de fogo, inclusive à noite. Não atravessa nuvens espessas.',[['termal.jpg','Imagem termal: pessoas em deslocamento sob vegetação.']]],
+ hex:['Concentração ou quantitativo por área','O mapa de calor mostra onde o fenômeno se concentra. O quantitativo por área permite comparar municípios, bairros ou quadrículas.',[['@hex','Ilustração sintética de quantitativo por quadrícula.']]],
+ pvo:['Percepção Visual de Objetivos (PVO)','O analista de imagens classifica o que observa em 22 categorias de objetivos: aeronaves e aeródromos; sistemas de mísseis; equipamentos eletrônicos; instalações militares; petróleo e derivados; atividades militares; transposição de brechas e cursos d’água; embarcações; vias de comunicação; terreno; faixa costeira; pontes; represas e eclusas; portos e estaleiros; instalações ferroviárias; instalações industriais; energia elétrica; avaliação de danos cinéticos; obstáculos defensivos; áreas urbanas; camuflagem; ser humano. Informar o tipo de local orienta a análise.',[['draga.jpg','Categoria embarcações: draga em curso d’água.'],['instalacao.jpg','Instalação em imagem aérea vertical.']]],
+ mde:['Modelo digital de elevação','Representa o relevo em três dimensões. Sobre ele se calculam declividade, áreas vistas e ocultas a partir de um ponto e perfis de itinerário.',[['mde-malha.jpg','Modelo digital de elevação em malha.'],['mde-img.jpg','Imagem sobreposta ao modelo de elevação.']]],
+ abertos:['Dados de fonte aberta revelam padrões','Em 2018, um mapa de calor de atividades físicas publicado por um aplicativo de corrida expôs rotinas e percursos no entorno de instalações militares em vários países. A concentração de registros no espaço é, por si, informação. Para a Contrainteligência, o caso mostra que o rastro digital do pessoal também é fonte para o oponente.',[['strava.jpg','Mapa de calor de atividades físicas em área urbana. © Strava 2017, Mapbox, OpenStreetMap, DigitalGlobe.']]],
+ danos:['Avaliação de danos cinéticos','É uma das categorias de objetivos da PVO. Compara a situação anterior e a posterior a uma ação para informar o que foi atingido, em que grau e se o objetivo permanece em condições de uso. Exige imagem posterior à ação e, de preferência, uma anterior para comparação.',[['danos.jpg','Aeronave destruída em solo, em imagem aérea vertical.'],['bda.jpg','Avaliação de danos em imagem anotada. Fonte: Departamento de Defesa dos EUA.']]],
+ bdgex:['Consultar primeiro o BDGEx','O Banco de Dados Geográficos do Exército reúne cartas e geoinformação já produzidas. O que nele estiver disponível dispensa pedido.'],
+ formatos:['O formato decorre do emprego','GeoPDF permite ligar e desligar camadas. KMZ é visualizado sobre o globo no Google Earth. GeoTIFF atende a quem opera sistema de informações geográficas.']
+};
+const pill=k=>`<aside class="pill"><b>O Sr sabia?</b><strong>${PILLS[k][0]}</strong><span>${PILLS[k][1]}</span>${PILLS[k][2]?`<div class="pfs">${PILLS[k][2].map(([s,c])=>`<figure class="pf">${s[0]==='@'?`<canvas class="thumb" data-draw="${s.slice(1)}" width="448" height="280" role="img" aria-label="${c}"></canvas>`:`<img src="img/${s}" alt="${c}">`}<small>${c}</small></figure>`).join('')}</div>`:''}</aside>`;
+
+const ROT={
+ B:[['Confirmar a pergunta','Reler a pergunta do solicitante e definir o nível exigido: detectar, reconhecer ou identificar.'],
+    ['Levantar as imagens disponíveis','Para a área e o período. Registrar data, sensor e resolução de cada uma.'],
+    ['Avaliar a qualidade','Nuvens, sombras, ângulo de visada e nitidez. Descartar o que não sustenta a resposta.'],
+    ['Orientar e conferir a escala','Georreferenciar e verificar norte e escala antes de qualquer leitura.'],
+    ['Ler do geral para o particular','Primeiro o entorno e os acessos; em seguida, o local de interesse.'],
+    ['Aplicar os elementos de interpretação','Forma, tamanho, tonalidade ou cor, textura, padrão, sombra, localização e associação.'],
+    ['Comparar','Com imagem de data anterior e com referências conhecidas do mesmo tipo de objeto.'],
+    ['Medir o que foi solicitado','Informar a margem de erro compatível com a resolução.'],
+    ['Distinguir observado, inferido e hipótese','Expressar a conclusão pelo estado da mente: certeza, opinião, dúvida ou ignorância.'],
+    ['Anotar e redigir','Representação com título, legenda, orientação, escala, classificação, fonte e data. Texto que responde à pergunta na primeira linha.'],
+    ['Revisar','Leitura por um segundo analista antes da difusão.']],
+ A:[['Confirmar finalidade e usuário','Definem o que destacar e o que omitir.'],
+    ['Definir área, escala e sistema de referência','Compatíveis com a extensão da área e com o tamanho de saída.'],
+    ['Reunir os dados','Consultar primeiro o BDGEx; em seguida, outras bases oficiais. Registrar fonte e data de cada camada.'],
+    ['Verificar a qualidade dos dados','Atualidade, completude e coerência entre camadas, todas no mesmo sistema de referência.'],
+    ['Integrar os dados do solicitante','Conferir coordenadas e eliminar duplicidades.'],
+    ['Selecionar e generalizar','Somente os temas solicitados, simplificados conforme a escala.'],
+    ['Simbolizar','Convenções cartográficas e simbologia militar em vigor. O tema fica em destaque sobre o fundo.'],
+    ['Rotular','Topônimos legíveis e sem sobreposição.'],
+    ['Compor a folha','Título, legenda, orientação, escala, classificação, fonte e data.'],
+    ['Exportar e testar','Abrir o arquivo no formato solicitado e conferir as camadas.'],
+    ['Revisar','Leitura por um segundo analista antes da difusão.']],
+ C:[['Confirmar o que se busca e o período','Reler a pergunta e fixar as datas de comparação.'],
+    ['Selecionar imagens comparáveis','Mesmo sensor ou resolução próxima, mesma época do ano e geometria de obtenção semelhante.'],
+    ['Corregistrar as imagens','Erro de registro entre as imagens gera falsa mudança.'],
+    ['Normalizar','Compensar diferenças de iluminação, atmosfera e sazonalidade.'],
+    ['Detectar','Comparação visual lado a lado e alternada; índices e diferença de imagens, quando couber.'],
+    ['Descartar falsas mudanças','Sombra, nuvem, variação do nível d’água e ciclo agrícola.'],
+    ['Caracterizar a mudança','Tipo, extensão e intervalo em que ocorreu, entre quais imagens.'],
+    ['Medir','Áreas e distâncias, com a margem de erro compatível com a resolução.'],
+    ['Distinguir observado, inferido e hipótese','Expressar a conclusão pelo estado da mente: certeza, opinião, dúvida ou ignorância.'],
+    ['Representar','Par anterior e posterior na mesma área e escala, com as mudanças delimitadas, legenda, fonte e datas.'],
+    ['Registrar os parâmetros do acompanhamento','Área, sensor e método, para repetir a análise na frequência acordada.'],
+    ['Revisar','Leitura por um segundo analista antes da difusão.']],
+ D:[['Confirmar o fenômeno e a pergunta','Concentração, evolução, relação com o terreno ou quantitativo por área.'],
+    ['Avaliar os dados recebidos','Origem, período e critério de registro. Aplicar a técnica de avaliação de dados.'],
+    ['Depurar','Eliminar duplicidades, registros sem local e erros de digitação.'],
+    ['Localizar os registros','Converter endereços e localidades em coordenadas. Registrar quantos foram localizados e com que precisão.'],
+    ['Escolher a unidade de análise','Ponto, quadrícula ou área administrativa, conforme a pergunta.'],
+    ['Escolher o método','Densidade por núcleo para concentração; quantitativo por área para comparação; série por período para evolução.'],
+    ['Definir e registrar os parâmetros','Raio, tamanho da célula e classes alteram o resultado e devem constar do produto.'],
+    ['Normalizar, quando couber','Por população, área ou extensão de via.'],
+    ['Interpretar com cautela','A concentração pode refletir onde há mais registro, e não onde há mais ocorrência.'],
+    ['Relacionar com o terreno','Vias, localidades, limites e fronteira.'],
+    ['Representar','Legenda com classes e unidade, fonte, período e método.'],
+    ['Revisar','Leitura por um segundo analista antes da difusão.']],
+ E:[['Confirmar finalidade, tropa e época','A natureza da tropa e a estação do ano mudam a classificação do terreno.'],
+    ['Obter o modelo de elevação e os dados','Consultar primeiro o BDGEx. Reunir hidrografia, vegetação, solos, vias e obras.'],
+    ['Verificar o modelo de elevação','Vazios e artefatos; se representa a superfície ou o terreno; resolução compatível com a finalidade.'],
+    ['Derivar os produtos básicos','Declividade, orientação de vertentes e hipsometria.'],
+    ['Classificar as restrições ao movimento','Terreno impeditivo, restritivo e adequado, conforme os critérios do manual do PITCIC.'],
+    ['Traçar corredores de mobilidade e vias de acesso','A partir das áreas adequadas e restritivas.'],
+    ['Analisar observação e campos de tiro','Áreas vistas e ocultas a partir dos pontos informados, com as alturas de observador e de alvo registradas.'],
+    ['Levantar obstáculos, cobertas, abrigos e acidentes capitais','Incluir pontos de transposição de cursos d’água.'],
+    ['Elaborar perfis e zonas, quando solicitados','Perfil de itinerário; zonas de pouso, de lançamento e de reunião.'],
+    ['Considerar as condições meteorológicas','Efeitos sobre o solo, os cursos d’água e a visibilidade.'],
+    ['Validar','Confrontar com imagem recente e, se possível, com reconhecimento.'],
+    ['Representar','Calcos e carta com legenda, fonte e data; visualização tridimensional, quando solicitada.'],
+    ['Revisar','Leitura por um segundo analista antes da difusão.']],
+ F:[['Preservar o original','Trabalhar em cópia. Registrar a procedência do material, a data e o canal de recebimento.'],
+    ['Examinar os metadados','Data, hora, equipamento e coordenadas, quando existirem. A ausência também é um dado.'],
+    ['Verificar circulação anterior','Confirmar se o material já foi divulgado em outra data ou em outro contexto.'],
+    ['Localizar','Comparar feições fixas (relevo, edificações, vias, placas) com imagens de referência da área provável.'],
+    ['Datar','Sombras, vegetação, condições meteorológicas e obras auxiliam a estimar hora e época.'],
+    ['Descrever objetos','Equipamento, armamento e viaturas pelas características observáveis, sem ultrapassá-las.'],
+    ['Descrever pessoas','Uma ficha SCCIAP por pessoa, com o estado da mente por item.'],
+    ['Buscar indícios de manipulação','Incoerência de luz e sombra, bordas, elementos repetidos, compressão desigual.'],
+    ['Medir por referência','Empregar objetos de dimensão conhecida na cena e informar a margem de erro.'],
+    ['Distinguir observado, inferido e hipótese','Expressar a conclusão pelo estado da mente: certeza, opinião, dúvida ou ignorância.'],
+    ['Revisar','Leitura por um segundo analista antes da difusão.']]
+};
+const SCCIAP=[['sexo','Sexo'],['cor','Cor'],['compleicao','Compleição física'],['idade','Idade aparente'],['altura','Altura estimada'],['partic','Particularidades']];
+
+/* ---------- estado ---------- */
+const blank=()=>({v:1,aval:'',nome:'',om:'',funcao:'',contato:'',usuario:'',decisao:'',pergunta:'',uso:'',dataDesejada:'',dataLimite:'',conseq:'',
+ ondeModo:'local',onde:'',extensao:'',ramo:'',livre:'',A:{fim:'',temas:[],fundo:'',dados:'',destaque:''},B:{local:'',saber:[],recencia:'',detalhe:''},C:{tipos:[],de:'',ate:'',modo:'',freq:'',detalhe:''},D:{fen:'',fenOutro:'',ver:[],dados:'',qtd:'',periodo:''},E:{fins:[],meio:'',pontos:'',epoca:''},F:{material:[],origem:'',saber:[],qtd:''},
+ formato:'',tamanho:'',vias:'1',justif:'',sigilo:'def',atualiza:'nao'});
+const exemplo=()=>Object.assign(blank(),{exemplo:true,nome:'Cap FULANO (fictício)',om:'Btl Exemplo',funcao:'S3',contato:'RITEx 000-0000',usuario:'em',
+ decisao:'Planejar o reconhecimento de ponte e de seus acessos.',pergunta:'A ponte e seus acessos permitem o trânsito de viaturas pesadas? Há indícios de utilização recente?',uso:'plan',
+ dataDesejada:plus(10),dataLimite:plus(20),conseq:'atraso',ondeModo:'local',onde:'Ponte sobre o Rio Exemplo, município fictício',extensao:'inst',ramo:'B',
+ B:{local:'eixo',saber:['acess','med','ativ'],recencia:'mes',detalhe:'veic'},formato:'tela',sigilo:'def'});
+const CFG_DEF={A:10,B:7,C:21,D:5,E:7,F:5,N:14,obt:15};
+let cfg={...CFG_DEF};
+try{const s=JSON.parse(localStorage.getItem('geoint-prazos')||'null');if(s)cfg={...CFG_DEF,...s};}catch(e){}
+const blankAn=r=>({req:r,rot:{},pessoas:[],ident:{},parecer:{},texto:'',integ:null});
+const cod=s=>{let x=2166136261;for(let i=0;i<s.length;i++){x^=s.charCodeAt(i);x=Math.imul(x,16777619);}return ('0000000'+(x>>>0).toString(16)).slice(-8).toUpperCase().replace(/^(.{4})/,'$1-');};
+function gerar(){const r=JSON.parse(JSON.stringify(S.req));delete r._cod;r._em=new Date().toISOString().slice(0,16).replace('T',' ')+' UTC';r._cod=cod(JSON.stringify(r));S.gen={json:JSON.stringify(r,null,1),cod:r._cod,em:r._em};}
+const PERFIL=(document.documentElement&&document.documentElement.dataset.perfil)||'analista';
+const S={req:blank(),step:0,an:null,gen:null,av:{},te:{}};
+const SN={sim:'Sim',parte:'Em parte',nao:'Não'},SN2={sim:'Sim',nao:'Não'};
+let DL=null;
+const SKINS=[['','Carta (atual)'],['marinho','Marinho e ouro'],['tatico','Tela tática']];let skin='tatico';
+if(!window.claude){DL={save:async({filename,data})=>{const f=new File([data],filename,{type:filename.endsWith('.json')?'application/json':'text/plain'});
+ if(/iPhone|iPad|Android/i.test(navigator.userAgent)&&navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:filename});return;}
+ const a=document.createElement('a'),u=URL.createObjectURL(f);a.href=u;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);}};document.body.classList.add('can-save');}
+else if(claude.use)claude.use('downloads').then(d=>{DL=d;if(d)document.body.classList.add('can-save');}).catch(()=>{});
+
+/* ---------- dedução ---------- */
+function deduce(r){
+ const ramo=r.ramo||'N',ref=cfg[ramo]??14,dias=daysTo(r.dataDesejada);
+ const urg=dias==null?null:(dias<ref?'alta':'baixa'),imp=CONSEQ[r.conseq]?.[1]||null;
+ let prio=null;
+ if(urg&&imp)prio=imp==='alta'?(urg==='alta'?1:2):(urg==='alta'?3:4);
+ const al=[],pe=[];
+ if(dias!=null&&dias<0)al.push(['crit','A data desejada já foi ultrapassada.']);
+ else if(urg==='alta')al.push(['warn',`A data desejada (em ${dias} dias) é inferior ao prazo de referência da seção para este produto (${ref} dias).`]);
+ if(r.dataDesejada&&r.dataLimite&&r.dataLimite<r.dataDesejada)al.push(['crit','A data-limite de utilidade é anterior à data desejada.']);
+ let resol=null,fonte=null;
+ if(ramo==='B'){
+  resol=B_DET[r.B.detalhe]?.[1]||null;
+  if(r.B.recencia)fonte=(r.B.recencia==='mes'||r.B.recencia==='evento')?'Provável nova obtenção de imagem':'Acervo existente';
+  if((r.B.detalhe==='veic'||r.B.detalhe==='edif')&&(r.extensao==='regiao'||r.extensao==='estado'))al.push(['warn','O detalhamento solicitado é incompatível com a extensão da área. Reduzir a área ou aceitar menor detalhamento.']);
+  if(r.B.detalhe==='veic'&&(r.B.recencia==='mes'||r.B.recencia==='evento'))al.push(['warn',`Imagem atual de altíssima resolução depende de nova obtenção, com prazo de no mínimo ${cfg.obt} dias.`]);
+  if(!r.B.local)pe.push('Tipo de local');if(!r.B.saber.length)pe.push('O que se necessita saber sobre o local');
+  if(!r.B.recencia)pe.push('Atualidade exigida da imagem');if(!r.B.detalhe)pe.push('Nível de detalhamento');
+ }
+ if(ramo==='F'){
+  if(r.F.origem==='nao')al.push(['warn','Sem origem conhecida, a análise terá limitações, que deverão constar do produto.']);
+  if(r.F.material.includes('rede'))al.push(['warn','Material de rede social costuma chegar sem metadados. Havendo o arquivo original, remetê-lo.']);
+  if(!r.F.material.length)pe.push('Tipo de material');if(!r.F.origem)pe.push('Origem do material');if(!r.F.saber.length)pe.push('O que se necessita saber sobre o material');
+ }
+ if(ramo==='A'){
+  if(r.A.dados&&r.A.dados!=='nao')al.push(['warn','Os dados próprios devem ser remetidos em anexo ao pedido.']);
+  if(r.A.temas.length>7)al.push(['warn','Muitos temas em um único mapa prejudicam a clareza. Avaliar a divisão em mais de um produto.']);
+  if(!r.A.fim)pe.push('Finalidade do mapa');if(!r.A.temas.length)pe.push('Temas a representar');if(!r.A.fundo)pe.push('Fundo do mapa');
+ }
+ if(ramo==='C'){
+  resol=B_DET[r.C.detalhe]?.[1]||null;
+  if(r.C.de&&r.C.ate&&r.C.ate<r.C.de)al.push(['crit','A data final do período é anterior à data inicial.']);
+  if(r.C.modo==='period')al.push(['warn','O acompanhamento periódico compromete meios da seção por prazo prolongado. A frequência será confirmada no parecer.']);
+  if(!r.C.tipos.length)pe.push('Tipo de mudança');if(!r.C.de)pe.push('Data inicial do período');if(!r.C.modo)pe.push('Comparação única ou acompanhamento');
+  if(r.C.modo==='period'&&!r.C.freq)pe.push('Frequência do acompanhamento');if(!r.C.detalhe)pe.push('Nível de detalhamento');
+ }
+ if(ramo==='D'){
+  if(r.D.dados==='end'||r.D.dados==='rel')al.push(['warn','Os registros precisam ser localizados antes da análise, o que amplia o prazo.']);
+  if(r.D.dados==='nao')al.push(['warn','Sem dados não há análise. A obtenção dos registros passa a integrar o prazo.']);
+  if(r.D.dados==='coord'||r.D.dados==='end')al.push(['warn','A planilha deve ser remetida em anexo ao pedido.']);
+  if(!r.D.fen)pe.push('Fenômeno a analisar');if(r.D.fen==='outro'&&!r.D.fenOutro)pe.push('Descrição do fenômeno');if(!r.D.ver.length)pe.push('O que se deseja visualizar');if(!r.D.dados)pe.push('Disponibilidade de dados');
+ }
+ if(ramo==='E'){
+  if(r.E.fins.includes('obs')&&!r.E.pontos)pe.push('Ponto de observação');
+  if(!r.E.fins.length)pe.push('Finalidade do estudo do terreno');if(!r.E.meio)pe.push('Natureza da tropa ou do meio');if(!r.E.epoca)pe.push('Época do ano');
+ }
+ if(ramo!=='N'&&!RAMOS[ramo].pronto)al.push(['warn','Este ramo ainda não dispõe de perguntas próprias no protótipo. O analista completará o pedido mediante contato.']);
+ if((ramo==='N'||!RAMOS[ramo].pronto)&&!r.livre)pe.push('Descrição da necessidade');
+ [['nome','Identificação do solicitante'],['om','Organização Militar'],['contato','Contato'],['decisao','O que se necessita decidir, planejar ou acompanhar'],['pergunta','Pergunta que o produto deve responder'],
+  ['dataDesejada','Data desejada'],['dataLimite','Data-limite de utilidade'],['conseq','Consequência do não atendimento no prazo'],['onde','Local'],['extensao','Extensão aproximada da área'],['formato','Formato de entrega']]
+  .forEach(([k,l])=>{if(!r[k])pe.push(l);});
+ if(!r.ramo)pe.push('Tipo de necessidade');
+ if(r.formato==='impresso'&&!r.tamanho)pe.push('Tamanho da impressão');
+ if(r.formato==='impresso'&&+r.vias>2&&!r.justif)pe.push('Justificativa para mais de duas vias');
+ return {ramo,produto:RAMOS[ramo].p,ref,dias,urg,imp,prio,escala:EXT[r.extensao]?.[1]||null,resol,fonte,
+  saida:r.formato?FORMATO[r.formato][1]+(r.formato==='impresso'&&r.tamanho?', '+TAM[r.tamanho][1]:''):null,al,pe};
+}
+const PRIO_TXT={1:'Urgente e importante',2:'Importante, sem urgência',3:'Urgente, de menor importância',4:'Sem urgência e de menor importância'};
+const list=(arr,dic)=>arr.length?arr.map(k=>dic[k]).join('; '):NI;
+
+function linhasPedido(r){
+ const L=[...(r.aval?[['Código do avaliador',r.aval]]:[]),['Solicitante',[r.nome,r.funcao,r.om].filter(Boolean).join(', ')||NI],['Contato',r.contato||NI],['Usuário do produto',USUARIO[r.usuario]||NI],
+  ['Necessita decidir, planejar ou acompanhar',r.decisao||NI],['Pergunta a responder',r.pergunta||NI],['Emprego do produto',USO[r.uso]||NI],
+  ['Data desejada',brDate(r.dataDesejada)],['Data-limite de utilidade',brDate(r.dataLimite)],['Consequência do não atendimento',CONSEQ[r.conseq]?.[0]||NI],
+  ['Local',(ONDE[r.ondeModo]||'')+': '+(r.onde||NI)],['Extensão da área',EXT[r.extensao]?.[0]||NI],['Tipo de necessidade',r.ramo?RAMOS[r.ramo].q:NI]];
+ if(r.ramo==='B')L.push(['Tipo de local',B_LOCAL[r.B.local]||NI],['Necessita saber',list(r.B.saber,B_SABER)],['Atualidade da imagem',B_REC[r.B.recencia]||NI],['Deve permitir distinguir',B_DET[r.B.detalhe]?.[0]||NI]);
+ if(r.ramo==='F')L.push(['Material',list(r.F.material,F_MAT)+(r.F.qtd?' ('+r.F.qtd+' arquivos)':'')],['Origem',F_ORIG[r.F.origem]||NI],['Necessita saber',list(r.F.saber,F_SABER)]);
+ if(r.ramo==='A')L.push(['Finalidade do mapa',A_FIM[r.A.fim]||NI],['Temas',list(r.A.temas,A_TEMAS)],['Fundo',A_FUNDO[r.A.fundo]||NI],['Dados próprios',DADOS_P[r.A.dados]||NI],...(r.A.destaque?[['Destaque',r.A.destaque]]:[]));
+ if(r.ramo==='C')L.push(['Tipo de mudança',list(r.C.tipos,C_TIPO)],['Período',brDate(r.C.de)+' a '+(r.C.ate?brDate(r.C.ate):'data atual')],['Modalidade',(C_MODO[r.C.modo]||NI)+(r.C.modo==='period'&&r.C.freq?', '+C_FREQ[r.C.freq].toLowerCase():'')],['Deve permitir distinguir',B_DET[r.C.detalhe]?.[0]||NI]);
+ if(r.ramo==='D')L.push(['Fenômeno',r.D.fen==='outro'?(r.D.fenOutro||NI):(D_FEN[r.D.fen]||NI)],['Deseja visualizar',list(r.D.ver,D_VER)],['Dados',D_DADOS[r.D.dados]||NI],['Quantidade',D_QTD[r.D.qtd]||NI],['Período dos dados',r.D.periodo||NI]);
+ if(r.ramo==='E')L.push(['Finalidade do estudo',list(r.E.fins,E_FIM)],['Tropa ou meio',E_MEIO[r.E.meio]||NI],['Pontos de referência',r.E.pontos||NI],['Época do ano',E_EPOCA[r.E.epoca]||NI]);
+ if(r.livre)L.push([r.ramo==='N'?'Descrição da necessidade':'Informações complementares',r.livre]);
+ L.push(['Entrega',r.formato?FORMATO[r.formato][0]+(r.formato==='impresso'?', '+(TAM[r.tamanho]?.[0]||'tamanho não informado')+', '+r.vias+' via(s)':''):NI]);
+ if(r.justif)L.push(['Justificativa das vias',r.justif]);
+ L.push(['Grau de sigilo pretendido',SIGILO[r.sigilo]],['Atualização de produto anterior',r.atualiza==='sim'?'Sim':'Não']);
+ return L;
+}
+function linhasTec(d){
+ return [['Família de produto',d.produto],['Prioridade sugerida',d.prio?d.prio+' ('+PRIO_TXT[d.prio]+'), a confirmar pelo chefe da seção':'indefinida'],
+  ['Urgência',d.urg?d.urg+(d.dias!=null?' ('+d.dias+' dias até a data desejada; referência '+d.ref+')':''):'indefinida'],['Importância',d.imp||'indefinida'],
+  ['Faixa de escala',d.escala||'indefinida'],...(d.resol?[['Classe de resolução',d.resol]]:[]),...(d.fonte?[['Fonte provável',d.fonte]]:[]),['Formato de saída',d.saida||'indefinido']];
+}
+const MXQ={1:['Urgente e importante','Apoia decisão ou operação em curso. Atendimento imediato.'],2:['Importante, sem urgência','Apoia o planejamento. Atendimento programado, com produto completo.'],
+ 3:['Urgente, de menor importância','Prazo curto e pouco impacto. Atendimento com produto simplificado ou do acervo.'],4:['Sem urgência e de menor importância','Atendimento conforme a disponibilidade da seção.']};
+const matriz=p=>{const c=n=>`<div class="${p===n?'on':''}"><b>${n}</b><strong>${MXQ[n][0]}</strong><small>${MXQ[n][1]}</small></div>`;
+ return `<div class="mxq" role="group" aria-label="Matriz de prioridades${p?': prioridade sugerida '+p:''}"><span>Urgência alta</span>${c(1)}${c(3)}<span>Urgência baixa</span>${c(2)}${c(4)}<span></span><span>Importância alta</span><span>Importância baixa</span></div>`;};
+const papel=t=>{const on=k=>({pasta:['A4','A3'],mesa:['A2','A1'],parede:['A0']}[t]||[]).includes(k)?'on':'';
+ return `<div class="medidas"><svg class="papel" viewBox="0 0 300 236" role="img" aria-label="Tamanhos de papel: A0 é a folha inteira; cada tamanho é a metade do anterior">
+ <rect class="${on('A1')}" x="150" y="1" width="149" height="211"/><text x="216" y="112">A1</text><rect class="${on('A2')}" x="1" y="106" width="149" height="106"/><text x="66" y="164">A2</text>
+ <rect class="${on('A3')}" x="75" y="1" width="75" height="105"/><text x="104" y="58">A3</text><rect class="${on('A4')}" x="1" y="54" width="74" height="52"/><text x="30" y="84">A4</text>
+ <rect x="38" y="1" width="37" height="53"/><text x="48" y="32">A5</text><rect x="1" y="27" width="37" height="27"/><text x="11" y="45">A6</text><rect x="1" y="1" width="37" height="26" style="opacity:.45"/>
+ <rect class="frame ${on('A0')}" x="1" y="1" width="298" height="211"/><text x="1" y="230">A0: a folha inteira</text></svg>
+ <dl class="kv">${[['A0','84,1 × 118,9 cm'],['A1','59,4 × 84,1 cm'],['A2','42,0 × 59,4 cm'],['A3','29,7 × 42,0 cm'],['A4','21,0 × 29,7 cm'],['A5','14,8 × 21,0 cm']].map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('')}</dl></div>`;};
+const kv=L=>`<dl class="kv">${L.map(([a,b])=>`<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join('')}</dl>`;
+const alerts=d=>d.al.length?d.al.map(([t,m])=>`<div class="alert ${t==='crit'?'crit':''}">${esc(m)}</div>`).join(''):'<div class="alert ok">Sem alertas de viabilidade.</div>';
+function textoPedido(r,d){
+ return 'PEDIDO DE PRODUTO DE GEOINTELIGÊNCIA'+(r.exemplo?' (EXEMPLO FICTÍCIO)':'')+'\n\n'+linhasPedido(r).map(([a,b])=>a+': '+b).join('\n')
+  +'\n\nTRADUÇÃO TÉCNICA\n'+linhasTec(d).map(([a,b])=>a+': '+b).join('\n')
+  +'\n\nALERTAS\n'+(d.al.length?d.al.map(a=>'- '+a[1]).join('\n'):'- nenhum')
+  +'\n\nPENDÊNCIAS\n'+(d.pe.length?d.pe.map(p=>'- '+p).join('\n'):'- nenhuma');
+}
+
+/* ---------- componentes de formulário ---------- */
+const fid=p=>'f-'+p.replace(/\./g,'-');
+const tx=(p,l,h='',ph='')=>`<label class="f" for="${fid(p)}">${l}${h?`<small>${h}</small>`:''}<input type="text" id="${fid(p)}" data-path="${p}" value="${esc(get(S,p))}" placeholder="${esc(ph)}"></label>`;
+const ta=(p,l,h='',ph='')=>`<label class="f" for="${fid(p)}">${l}${h?`<small>${h}</small>`:''}<textarea id="${fid(p)}" data-path="${p}" placeholder="${esc(ph)}">${esc(get(S,p))}</textarea></label>`;
+const dt=(p,l,h='')=>`<label class="f" for="${fid(p)}">${l}${h?`<small>${h}</small>`:''}<input type="date" id="${fid(p)}" data-path="${p}" value="${esc(get(S,p))}"></label>`;
+const sel=(p,l,opts,rr=1)=>`<label class="f" for="${fid(p)}">${l}<select id="${fid(p)}" data-path="${p}" ${rr?'data-rr="1"':''}>${opts.map(([v,t])=>`<option value="${v}" ${get(S,p)===v?'selected':''}>${esc(t)}</option>`).join('')}</select></label>`;
+const rd=(p,l,opts,cls='')=>`<fieldset><legend>${l}</legend><div class="${cls||'stack'}" style="gap:8px">${opts.map(([v,t,s,tag])=>{const im=IMG[p+'.'+v];return `<label class="opt"><input type="radio" id="${fid(p)}-${v}" name="${fid(p)}" data-path="${p}" value="${v}" ${get(S,p)===v?'checked':''}>${im?(im[0]==='@'?`<canvas class="thumb" data-draw="${im.slice(1)}" width="224" height="168" role="img" aria-label="Ilustração: ${esc(t)}"></canvas>`:`<img src="img/${im}" alt="Exemplo: ${esc(t)}">`):''}<span>${esc(t)}${s?`<small>${esc(s)}</small>`:''}</span>${tag?`<i class="tag">${tag}</i>`:''}</label>`;}).join('')}</div></fieldset>`;
+const ck=(p,l,dic)=>`<fieldset><legend>${l} <span class="hint">Assinalar quantos forem necessários.</span></legend><div class="opts2">${Object.entries(dic).map(([v,t])=>`<label class="opt"><input type="checkbox" id="${fid(p)}-${v}" data-arr="${p}" value="${v}" ${get(S,p).includes(v)?'checked':''}><span>${esc(t)}</span></label>`).join('')}</div></fieldset>`;
+const ent=(dic,f=x=>x)=>Object.entries(dic).map(([k,v])=>[k,...[].concat(f(v))]);
+
+/* ---------- ilustrações sintéticas ---------- */
+const rnd=(x,y)=>{const s=Math.sin(x*127.1+y*311.7)*43758.5453;return s-Math.floor(s);};
+const sm=t=>t*t*(3-2*t);
+const n2=(x,y)=>{const xi=Math.floor(x),yi=Math.floor(y),xf=sm(x-xi),yf=sm(y-yi),a=rnd(xi,yi),b=rnd(xi+1,yi),d=rnd(xi,yi+1),e=rnd(xi+1,yi+1);return a+(b-a)*xf+(d-a)*yf+(a-b-d+e)*xf*yf;};
+const ST=[[.34,[154,192,140]],[.44,[196,210,154]],[.54,[226,212,156]],[.64,[206,164,110]],[.76,[160,112,78]],[.95,[238,232,222]]];
+const ramp=v=>{if(v<=ST[0][0])return ST[0][1];for(let i=1;i<ST.length;i++)if(v<=ST[i][0]){const t=(v-ST[i-1][0])/(ST[i][0]-ST[i-1][0]),A=ST[i-1][1],B=ST[i][1];return [A[0]+(B[0]-A[0])*t,A[1]+(B[1]-A[1])*t,A[2]+(B[2]-A[2])*t];}return ST[ST.length-1][1];};
+/* modo: hipso (carta), shade (relevo sombreado), veg (cor natural), pan (pancromática) */
+function paint(g,W,H,modo,span,ox,oy){
+ const im=g.createImageData(W,H),px=im.data,h=new Float32Array(W*H),k=span/W,CI=.03;
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++){let v=0,a=.5,f=1;for(let i=0;i<5;i++){v+=a*n2((x*k+ox)*f,(y*k+oy)*f);a*=.5;f*=2;}h[y*W+x]=v;}
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+  const i=y*W+x,v=h[i],xr=h[y*W+Math.min(W-1,x+1)],yd=h[Math.min(H-1,y+1)*W+x],xl=h[y*W+Math.max(0,x-1)],yu=h[Math.max(0,y-1)*W+x];
+  const s=Math.max(.62,Math.min(1.22,1+((xl-xr)+(yu-yd))*W*.055));let col;
+  if(modo==='shade'){const c=205*s;col=[c,c,c*.98];}
+  else if(modo==='veg'){const t=n2(x*.35+ox,y*.35+oy)*.25;col=[(58+v*60+t*40)*s,(96+v*50+t*30)*s,(52+v*30)*s];}
+  else if(modo==='pan'){const c=(70+v*110+n2(x*.5,y*.5)*40)*s;col=[c,c,c];}
+  else{const agua=v<.33;
+   if(agua)col=[150,190,216];
+   else{col=ramp(v);col=[col[0]*s,col[1]*s,col[2]*s];const q=Math.floor(v/CI);if(q!==Math.floor(xr/CI)||q!==Math.floor(yd/CI)){const m=Math.max(q,Math.floor(xr/CI),Math.floor(yd/CI))%5===0?.75:.38;col=[col[0]+(96-col[0])*m,col[1]+(60-col[1])*m,col[2]+(30-col[2])*m];}}
+   if(agua!==(xr<.33)||agua!==(yd<.33))col=[40,104,150];}
+  px[i*4]=col[0];px[i*4+1]=col[1];px[i*4+2]=col[2];px[i*4+3]=255;
+ }
+ g.putImageData(im,0,0);
+}
+function drawCarta(){
+ const c=document.getElementById('carta');if(!c||!c.getContext)return;
+ const dpr=Math.min(window.devicePixelRatio||1,2),W=Math.max(320,Math.round(c.clientWidth*dpr)),H=Math.round(c.clientHeight*dpr);
+ c.width=W;c.height=H;const g=c.getContext('2d');paint(g,W,H,'hipso',5.2,3.2,1.7);
+ const u=dpr,cell=W/6;g.strokeStyle='rgba(20,23,15,.38)';g.lineWidth=u;g.font=`500 ${10*u}px IBM Plex Mono, monospace`;g.fillStyle='rgba(20,23,15,.85)';
+ for(let i=1;i<6;i++){const X=Math.round(i*cell)+.5;g.beginPath();g.moveTo(X,0);g.lineTo(X,H);g.stroke();g.fillText(String(52+i).padStart(2,'0'),X+3*u,11*u);}
+ for(let j=1;j*cell<H;j++){const Y=Math.round(j*cell)+.5;g.beginPath();g.moveTo(0,Y);g.lineTo(W,Y);g.stroke();g.fillText(String(78-j).padStart(2,'0'),3*u,Y-3*u);}
+ const bw=cell,bx=W-bw-14*u,by=H-14*u;g.fillStyle='rgba(251,251,246,.9)';g.fillRect(bx-8*u,by-20*u,bw+16*u,28*u);
+ g.fillStyle='#14170f';g.fillRect(bx,by-4*u,bw/2,4*u);g.strokeStyle='#14170f';g.strokeRect(bx+.5,by-4*u+.5,bw-1,4*u-1);g.fillText('0',bx,by-8*u);g.fillText('1 km',bx+bw-26*u,by-8*u);
+}
+function drawBg(){
+ const c=document.getElementById('bg');if(!c||!c.getContext)return;
+ const dpr=Math.min(window.devicePixelRatio||1,2),W=window.innerWidth,H=window.innerHeight;c.width=Math.round(W*dpr);c.height=Math.round(H*dpr);
+ const m=(getComputedStyle(document.body).backgroundColor.match(/\d+/g)||[232,234,224]).map(Number),esc_=m[0]+m[1]+m[2]<380,hx=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim().replace('#',''),cor=hx.length===6?[0,2,4].map(i=>parseInt(hx.slice(i,i+2),16)).join(','):(esc_?'190,198,150':'75,83,32');
+ const g=c.getContext('2d');g.scale(dpr,dpr);
+ const P=8,nx=Math.ceil(W/P)+1,ny=Math.ceil(H/P)+1,k=3.4/Math.max(W,720)*P,CI=.03,f=new Float32Array(nx*ny);
+ for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){let v=0,a=.5,q=1;for(let o=0;o<4;o++){v+=a*n2((i*k+11.3)*q,(j*k+4.9)*q);a*=.5;q*=2;}f[j*nx+i]=v;}
+ const fina=new Path2D(),mestra=new Path2D();
+ for(let j=0;j<ny-1;j++)for(let i=0;i<nx-1;i++){
+  const a=f[j*nx+i],b=f[j*nx+i+1],e=f[(j+1)*nx+i],d=f[(j+1)*nx+i+1],lo=Math.min(a,b,d,e),hi=Math.max(a,b,d,e),x=i*P,y=j*P;
+  for(let n=Math.ceil(lo/CI);n*CI<hi;n++){const L=n*CI,t=[];
+   if((a<L)!==(b<L))t.push([x+P*(L-a)/(b-a),y]);if((b<L)!==(d<L))t.push([x+P,y+P*(L-b)/(d-b)]);if((e<L)!==(d<L))t.push([x+P*(L-e)/(d-e),y+P]);if((a<L)!==(e<L))t.push([x,y+P*(L-a)/(e-a)]);
+   const pa=n%5===0?mestra:fina;for(let s=0;s+1<t.length;s+=2){pa.moveTo(t[s][0],t[s][1]);pa.lineTo(t[s+1][0],t[s+1][1]);}}
+ }
+ g.lineCap='round';g.lineJoin='round';g.lineWidth=1;g.strokeStyle=`rgba(${cor},${esc_?.13:.15})`;g.stroke(fina);g.lineWidth=1.3;g.strokeStyle=`rgba(${cor},${esc_?.26:.3})`;g.stroke(mestra);
+}
+const line=(g,pts,cor,w,dash)=>{g.save();g.strokeStyle=cor;g.lineWidth=w;g.setLineDash(dash||[]);g.beginPath();pts.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.stroke();g.restore();};
+const tag=(g,t,x,y)=>{g.font='600 13px IBM Plex Mono, monospace';const w=g.measureText(t).width+8;g.fillStyle='rgba(20,23,15,.85)';g.fillRect(x,y,w,18);g.fillStyle='#fff';g.fillText(t,x+4,y+13);};
+function cena(g,W,H){ /* área urbana fictícia: quadras, via e viaturas */
+ paint(g,W,H,'veg',3,9.1,4.3);line(g,[[0,118],[90,104],[224,112]],'#8d8d86',9);line(g,[[96,0],[104,168]],'#8d8d86',6);
+ g.fillStyle='#d9d6cc';for(let r=0;r<3;r++)for(let c=0;c<5;c++){if((r*5+c)%4===3)continue;g.fillRect(112+c*22,14+r*26,15,17);}
+ g.fillStyle='#b9b4a6';g.fillRect(18,22,52,30);g.fillStyle='#e9e7df';g.fillRect(24,28,18,10);g.fillRect(46,28,18,18);
+ g.fillStyle='#fff';[[20,112],[52,108],[130,107],[170,109]].forEach(([x,y])=>g.fillRect(x,y,5,3));g.fillStyle='#2a2a2a';[[99,40],[100,80],[101,140]].forEach(([x,y])=>g.fillRect(x,y,3,5));
+}
+function pixelar(c,f){const t=document.createElement('canvas');t.width=Math.ceil(c.width/f);t.height=Math.ceil(c.height/f);const tg=t.getContext('2d');tg.drawImage(c,0,0,t.width,t.height);const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(t,0,0,c.width,c.height);}
+const DRAW={
+ res30:(g,W,H,c)=>{cena(g,W,H);pixelar(c,16);},res5:(g,W,H,c)=>{cena(g,W,H);pixelar(c,5);},res06:(g,W,H)=>cena(g,W,H),
+ frelevo:(g,W,H)=>paint(g,W,H,'shade',2.6,3.2,1.7),
+ fsimples:(g,W,H)=>{g.fillStyle='#f1efe2';g.fillRect(0,0,W,H);line(g,[[0,60],[70,74],[120,40],[224,58]],'#9a9a8e',1.5,[5,4]);line(g,[[120,40],[132,168]],'#9a9a8e',1.5,[5,4]);
+  line(g,[[0,140],[60,120],[110,128],[224,96]],'#2f7fb0',3);line(g,[[20,0],[58,70],[150,104],[224,150]],'#c23b2e',2.5);line(g,[[150,104],[170,0]],'#c23b2e',2);
+  [[58,70],[150,104],[196,134]].forEach(([x,y])=>{g.fillStyle='#fff';g.beginPath();g.arc(x,y,6,0,7);g.fill();g.fillStyle='#14170f';g.beginPath();g.arc(x,y,4,0,7);g.fill();});},
+ anot:(g,W,H)=>{paint(g,W,H,'pan',3,6.4,2.2);g.fillStyle='#cfcfcf';g.fillRect(120,96,58,34);g.fillStyle='#e6e6e6';[[60,60],[74,60],[150,52],[96,120]].forEach(([x,y])=>g.fillRect(x,y,9,5));
+  line(g,[[28,30],[62,60]],'#35c6e8',2);line(g,[[196,30],[154,52]],'#35c6e8',2);line(g,[[40,146],[120,116]],'#35c6e8',2);tag(g,'1',14,14);tag(g,'2',190,14);tag(g,'3',22,140);},
+ mud:(g,W,H)=>{paint(g,W,H,'veg',3,2.2,7.5);g.save();g.beginPath();g.rect(W/2,0,W/2,H);g.clip();g.fillStyle='#cdb98f';g.beginPath();g.moveTo(130,60);g.lineTo(196,48);g.lineTo(206,112);g.lineTo(140,124);g.closePath();g.fill();
+  line(g,[[112,168],[150,110],[168,84]],'#e9dcc0',4);g.fillStyle='#f3f1ea';g.fillRect(150,70,14,9);g.fillRect(172,78,14,9);g.restore();line(g,[[W/2,0],[W/2,H]],'#fff',2);tag(g,'T1',8,8);tag(g,'T2',W/2+8,8);},
+ calor:(g,W,H)=>{g.fillStyle='#ebe8dc';g.fillRect(0,0,W,H);for(let x=10;x<W;x+=26)line(g,[[x,0],[x+18,H]],'#cfcabb',1);for(let y=12;y<H;y+=24)line(g,[[0,y],[W,y-10]],'#cfcabb',1);
+  [[70,60,58],[150,104,70],[190,44,40],[40,130,36]].forEach(([x,y,r])=>{const gr=g.createRadialGradient(x,y,2,x,y,r);gr.addColorStop(0,'rgba(214,40,30,.9)');gr.addColorStop(.35,'rgba(244,196,48,.75)');gr.addColorStop(.7,'rgba(60,140,220,.4)');gr.addColorStop(1,'rgba(60,140,220,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,2*r,2*r);});},
+ terreno:(g,W,H)=>{paint(g,W,H,'hipso',2.2,5.6,8.4);line(g,[[10,150],[60,120],[96,128],[140,84],[204,40]],'#14170f',3,[8,5]);g.fillStyle='#14170f';g.beginPath();g.moveTo(204,28);g.lineTo(214,46);g.lineTo(194,46);g.closePath();g.fill();},
+ hex:(g,W,H)=>{g.fillStyle='#ebe8dc';g.fillRect(0,0,W,H);for(let x=10;x<W;x+=34)line(g,[[x,0],[x+26,H]],'#cfcabb',1);for(let y=12;y<H;y+=30)line(g,[[0,y],[W,y-14]],'#cfcabb',1);
+  const R=30,dx=R*1.5,dy=R*Math.sqrt(3);g.font='600 13px IBM Plex Mono, monospace';g.textAlign='center';
+  for(let c=0;c*dx<W+R;c++)for(let r=0;r*dy<H+dy;r++){const x=c*dx,y=r*dy+(c%2?dy/2:0),v=Math.pow(n2(c*.55+2.3,r*.6+7.1),1.6);
+   g.beginPath();for(let k=0;k<6;k++){const a=Math.PI/3*k;g.lineTo(x+R*Math.cos(a),y+R*Math.sin(a));}g.closePath();g.fillStyle=`rgba(150,28,22,${(.08+v*.85).toFixed(2)})`;g.fill();g.strokeStyle='rgba(20,23,15,.45)';g.lineWidth=1;g.stroke();
+   g.fillStyle=v>.45?'#fff':'#14170f';g.fillText(String(Math.round(v*120)),x,y+5);}g.textAlign='left';},
+ termal:(g,W,H)=>{paint(g,W,H,'pan',3.4,1.3,5.2);g.fillStyle='rgba(6,8,6,.62)';g.fillRect(0,0,W,H);
+  const ch=g.createLinearGradient(0,H*.62,0,H);ch.addColorStop(0,'rgba(120,120,120,0)');ch.addColorStop(1,'rgba(150,150,150,.28)');g.fillStyle=ch;g.fillRect(0,H*.62,W,H*.38);
+  for(let i=0;i<46;i++){const x=rnd(i,3)*W,y0=rnd(i,7)*H*.5,l=60+rnd(i,11)*150,d=(rnd(i,5)-.5)*26;line(g,[[x,y0],[x+d,y0+l]],`rgba(${rnd(i,2)>.5?'170,170,170':'10,10,10'},${(.12+rnd(i,9)*.2).toFixed(2)})`,1+rnd(i,13)*2.5);}
+  const hot=(x,y,rx,ry,f)=>{g.save();g.translate(x,y);g.scale(rx,ry);const q=g.createRadialGradient(0,0,0,0,0,1);q.addColorStop(0,`rgba(255,251,224,${f})`);q.addColorStop(.4,`rgba(255,206,60,${f})`);q.addColorStop(.75,`rgba(238,108,26,${f*.9})`);q.addColorStop(1,'rgba(150,30,10,0)');g.fillStyle=q;g.beginPath();g.arc(0,0,1,0,7);g.fill();g.restore();};
+  const vulto=(x,y,s,f)=>{hot(x,y-34*s,7*s,8*s,f);hot(x,y-12*s,11*s,19*s,f);hot(x-5*s,y+20*s,6*s,20*s,f);hot(x+5*s,y+20*s,6*s,20*s,f);};
+  vulto(96,168,1.15,1);vulto(150,160,.95,.95);vulto(214,150,.72,.8);
+  g.fillStyle='rgba(120,120,120,.55)';g.fillRect(292,150,118,40);g.fillRect(306,126,62,28);g.fillStyle='rgba(60,60,60,.8)';g.fillRect(312,131,22,18);g.fillRect(340,131,22,18);
+  hot(396,168,22,20,1);hot(312,192,13,13,.7);hot(388,192,13,13,.8);hot(288,186,9,6,.6);
+  for(let i=0;i<22;i++){const x=40+rnd(i,21)*230,y0=110+rnd(i,23)*60;line(g,[[x,y0],[x+(rnd(i,25)-.5)*30,y0+50+rnd(i,27)*70]],'rgba(8,8,8,.7)',1+rnd(i,29)*2);}
+  tag(g,'TERMAL',10,10);},
+ forense:(g,W,H)=>{const sk=g.createLinearGradient(0,0,0,H);sk.addColorStop(0,'#aeb4b0');sk.addColorStop(1,'#70766f');g.fillStyle=sk;g.fillRect(0,0,W,H);g.fillStyle='#4a4f47';g.fillRect(0,112,W,56);
+  g.fillStyle='#5d625a';[[14,62,44,50],[66,40,36,72],[110,74,52,38],[170,54,40,58]].forEach(r=>g.fillRect(...r));g.fillStyle='#2d302b';[[24,74],[40,74],[76,54],[88,54],[76,74],[182,66],[196,66]].forEach(([x,y])=>g.fillRect(x,y,7,9));
+  g.strokeStyle='rgba(255,255,255,.85)';g.lineWidth=1.5;g.beginPath();g.arc(128,92,30,0,7);g.moveTo(88,92);g.lineTo(168,92);g.moveTo(128,52);g.lineTo(128,132);g.stroke();tag(g,'DATA ?',8,8);tag(g,'LOCAL ?',8,30);}
+};
+function drawThumbs(){document.querySelectorAll('canvas.thumb').forEach(c=>{if(!c.getContext)return;const f=DRAW[c.dataset.draw];if(f)f(c.getContext('2d'),c.width,c.height,c);});}
+
+/* ---------- telas ---------- */
+function vInicio(){
+ const k='pergunta';
+ return `<figure><canvas id="carta" role="img" aria-label="Carta ilustrativa com hipsometria, curvas de nível, hidrografia e quadriculado"></canvas>
+ <figcaption>Ilustração: relevo sintético com hipsometria, sombreamento, curvas de nível, hidrografia e quadriculado. Não representa área real.</figcaption></figure>
+ <div class="hero"><div class="embw">${EMB.replace('class="emb"','class="emb big"')}</div><div class="stack"><h1>O pedido parte da necessidade de conhecimento, não do tipo de produto</h1>
+ <p class="lead">O solicitante responde em linguagem corrente. O aplicativo converte as respostas em requisitos técnicos e entrega ao analista uma ficha de demanda pronta para o início do trabalho.</p></div></div>
+ <div class="modes">
+  <a class="mode" href="#solicitante"><h2>Solicitante</h2><span>Necessito de um produto e vou formalizar o pedido. Oito passos.</span></a>
+  ${PERFIL==='analista'?'<a class="mode" href="#analista"><h2>Analista</h2><span>Recebi um pedido e vou carregar a ficha de demanda, o roteiro e o parecer de viabilidade.</span></a>':''}
+  <a class="mode" href="#teste"><h2>Roteiro de teste</h2><span>Casos fictícios e ficha de avaliação para a fase de testes.</span></a>
+ </div>
+ <div class="flow"><b>Pedido</b>→<b>Remessa por canal seguro</b>→<b>Ficha de demanda</b>→<b>Parecer de viabilidade</b>→<b>Produto</b></div>
+ ${pill(k)}
+ <p class="muted">Versão de testes 0.9. Os seis ramos dispõem de perguntas próprias e de roteiro para o analista.</p>`;
+}
+const EMB='<img class="emb" src="img/emblema.png" alt="">';
+const sai=(t,id,nome,rot)=>t?`<textarea class="code" id="${id}" readonly aria-label="${rot}">${esc(t)}</textarea><div class="btns"><button data-act="copy" data-src="${id}">Copiar</button><button class="save" data-act="save" data-src="${id}" data-name="${nome}">Salvar</button></div>`:'';
+function vAval(){
+ return `<div class="stack"><h1>Avaliação do produto recebido</h1><p class="lead">Preenchida pelo solicitante após a entrega. Retorna à seção por canal seguro e orienta o aperfeiçoamento dos produtos.</p></div>
+ <section class="card"><h2>Avaliação pós-entrega</h2>
+  <div class="row">${tx('av.cod','Código de conferência do pedido','Consta do resumo exportado.')}${tx('av.prod','Produto recebido','','Ex.: análise de imagens da ponte.')}</div>
+  ${rd('av.resp','O produto respondeu à pergunta formulada?',ent(SN),'opts2')}
+  ${rd('av.tempo','Chegou a tempo de apoiar a decisão?',ent(SN2),'opts2')}
+  ${rd('av.formato','O formato atendeu ao emprego previsto?',ent(SN2),'opts2')}
+  ${rd('av.clareza','Foi compreendido sem necessidade de esclarecimento?',ent(SN2),'opts2')}
+  ${ta('av.faltou','O que faltou ou deve ser aperfeiçoado')}
+  <div class="btns"><button class="pri" data-act="av-gerar">Gerar avaliação</button></div>${sai(S.av.texto,'out-av','avaliacao-geoint.txt','Texto da avaliação')}<span class="hint" id="msg" role="status"></span></section>`;
+}
+const CASOS=[['Caso 1 - Análise de imagens','O S3 de um batalhão fictício planeja o reconhecimento de uma ponte sobre o Rio Exemplo. Necessita saber se a ponte e seus acessos permitem o trânsito de viaturas pesadas e se há indícios de utilização recente. O resultado deve chegar em 10 dias, para o planejamento.'],
+ ['Caso 2 - Estudo do terreno','O comandante de uma companhia fictícia deslocará tropa motorizada da localidade Alfa para a localidade Bravo, na estação chuvosa. Necessita conhecer as restrições ao movimento e um itinerário alternativo. A decisão será tomada em 5 dias.'],
+ ['Caso 3 - Distribuição espacial','A seção de Inteligência de uma brigada fictícia dispõe de planilha com cerca de 300 ocorrências do último semestre, registradas por localidade, sem coordenadas. Necessita saber onde se concentram, para orientar o patrulhamento. Haverá apresentação ao comandante em 3 semanas.']];
+const PERF={sol:'Solicitante (não especialista)',an:'Analista de Geointeligência'};
+function vTeste(){
+ const t=S.te;
+ return `<div class="stack"><h1>Roteiro de teste</h1><p class="lead">Os casos são fictícios. O objetivo é verificar se o pedido é formulado sem ajuda e se a ficha de demanda permite iniciar o trabalho.</p></div>
+ <section class="card"><h2>Como proceder</h2><ol class="stack" style="margin:0;padding-left:20px;gap:6px">
+  <li>Escolher um dos casos abaixo e informar o código do avaliador no primeiro passo do pedido.</li><li>Preencher o pedido no módulo Solicitante, sem consultar terceiros, e gerar o arquivo.</li>
+  <li>Na versão Analista: carregar o arquivo, percorrer a ficha de demanda e emitir o parecer de viabilidade.</li><li>Responder à ficha de avaliação ao final desta página e remetê-la ao responsável pelo teste.</li></ol></section>
+ <section class="card"><h2>Casos</h2>${CASOS.map(([a,b])=>`<div class="stack" style="gap:4px"><h3>${a}</h3><p>${b}</p></div>`).join('')}</section>
+ <section class="card"><h2>Ficha de avaliação do teste</h2>
+  <div class="row">${tx('te.aval','Código do avaliador','','Ex.: T-01')}${sel('te.caso','Caso percorrido',[['','Selecionar'],...CASOS.map(c=>[c[0],c[0]])],0)}</div>
+  ${rd('te.perfil','Em que condição o Sr avaliou?',ent(PERF),'opts2')}
+  ${rd('te.q1','As perguntas foram compreendidas sem ajuda?',ent(SN),'opts2')}
+  ${rd('te.q2','O tempo de preenchimento foi adequado?',ent(SN2),'opts2')}${tx('te.min','Tempo gasto, em minutos')}
+  ${rd('te.q3','O resumo e os alertas corresponderam ao que se pretendia pedir?',ent(SN),'opts2')}
+  ${t.perfil==='an'?rd('te.q4','A ficha de demanda trouxe o necessário para iniciar o trabalho?',ent(SN),'opts2'):''}
+  ${ta('te.q5','O que alterar, retirar ou acrescentar')}
+  <div class="btns"><button class="pri" data-act="te-gerar">Gerar ficha</button></div>${sai(t.texto,'out-te','ficha-teste-geoint.txt','Texto da ficha')}<span class="hint" id="msg" role="status"></span></section>`;
+}
+const STEPS=['Solicitante','Necessidade','Prazo','Área de interesse','Tipo de necessidade','Detalhamento','Entrega','Resumo'];
+function vSolic(){
+ const r=S.req,s=S.step;let body='';
+ if(s===0)body=`${pill('bdgex')}<div class="row">${tx('req.nome','Posto ou graduação e nome de guerra')}${tx('req.om','Organização Militar (OM)')}</div><div class="row">${tx('req.funcao','Função')}${tx('req.contato','Contato','Ramal, RITEx ou outro meio já empregado pela seção.')}</div>
+  ${tx('req.aval','Código do avaliador','Somente na fase de testes. Identifica quem gerou o pedido; não é autenticação.','Ex.: T-01')}
+  ${rd('req.usuario','Quem empregará o produto?',ent(USUARIO),'opts2')}`;
+ if(s===1)body=`${pill('pergunta')}${ta('req.decisao','O que o Sr necessita decidir, planejar ou acompanhar?','','Ex.: planejar o reconhecimento de ponte e de seus acessos.')}
+  ${tx('req.pergunta','Necessidade de Inteligência: qual pergunta o produto deve responder?','Formular como pergunta clara e concisa.','Ex.: os acessos permitem o trânsito de viaturas pesadas?')}${rd('req.uso','Como o produto será empregado?',ent(USO),'opts2')}`;
+ if(s===2)body=`${pill('oportunidade')}<div class="row">${dt('req.dataDesejada','Data desejada para a entrega','Melhor data para atingir o objetivo.')}${dt('req.dataLimite','Data-limite de utilidade','Após esta data, o produto perde a oportunidade.')}</div>
+  ${rd('req.conseq','Qual a consequência do não atendimento no prazo?',ent(CONSEQ,v=>v[0]))}<p class="hint">A prioridade é sugerida a partir destas respostas e confirmada pelo chefe da seção.</p>${matriz(null)}`;
+ if(s===3)body=`${pill('escala')}${sel('req.ondeModo','Como o Sr prefere informar o local?',Object.entries(ONDE),0)}${tx('req.onde','Local','Descrever conforme a forma escolhida acima.','Ex.: município, designação da OM, ponto e raio em km, origem e destino.')}
+  ${rd('req.extensao','Qual a extensão aproximada da área?',ent(EXT,v=>v[0]),'opts2')}`;
+ if(s===4)body=`${pill('geoint')}${rd('req.ramo','Do que o Sr necessita, principalmente?',Object.entries(RAMOS).map(([k,v])=>[k,v.q,v.p,k==='N'||v.pronto?'':'em elaboração']))}`;
+ if(s===5){
+  const comp=ta('req.livre','Informações complementares','Opcional.');
+  if(r.ramo==='A')body=`${pill('mapa')}${rd('req.A.fim','Qual a finalidade do mapa?',ent(A_FIM),'opts2')}${ck('req.A.temas','O que deve ser representado?',A_TEMAS)}
+   ${rd('req.A.fundo','Qual o fundo desejado?',ent(A_FUNDO),'opts2')}${rd('req.A.dados','O Sr dispõe de dados próprios a incluir?',ent(DADOS_P),'opts2')}
+   ${tx('req.A.destaque','O que deve ficar em destaque?','Opcional.','Ex.: itinerário principal, limites da área de responsabilidade.')}${comp}`;
+  else if(r.ramo==='B')body=`${pill('pvo')}${rd('req.B.local','Qual o tipo de local?',ent(B_LOCAL),'opts2')}${pill('niveis')}${ck('req.B.saber','O que o Sr necessita saber sobre o local?',B_SABER)}
+   ${pill('resolucao')}${rd('req.B.detalhe','Nível de detalhamento: o que a imagem deve permitir distinguir?',ent(B_DET,v=>v[0]))}
+   ${pill('revisita')}${rd('req.B.recencia','Qual a atualidade exigida da imagem?',ent(B_REC),'opts2')}${pill('radar')}${pill('termal')}${pill('danos')}${comp}`;
+  else if(r.ramo==='C')body=`${pill('realce')}${ck('req.C.tipos','Que tipo de mudança interessa?',C_TIPO)}
+   <div class="row">${dt('req.C.de','Data inicial do período')}${dt('req.C.ate','Data final do período','Em branco: até a data atual.')}</div>
+   ${rd('req.C.modo','Comparação única ou acompanhamento?',ent(C_MODO),'opts2')}${r.C.modo==='period'?rd('req.C.freq','Com que frequência?',ent(C_FREQ),'opts2'):''}
+   ${pill('resolucao')}${rd('req.C.detalhe','Nível de detalhamento: o que a imagem deve permitir distinguir?',ent(B_DET,v=>v[0]))}${comp}`;
+  else if(r.ramo==='D')body=`${pill('abertos')}${pill('dados')}${rd('req.D.fen','Qual fenômeno deve ser analisado?',ent(D_FEN),'opts2')}${r.D.fen==='outro'?tx('req.D.fenOutro','Descrever o fenômeno'):''}
+   ${pill('hex')}${ck('req.D.ver','O que o Sr deseja visualizar?',D_VER)}${rd('req.D.dados','De que dados o Sr dispõe?',ent(D_DADOS))}
+   ${rd('req.D.qtd','Quantidade aproximada de registros',ent(D_QTD),'opts2')}${tx('req.D.periodo','Período abrangido pelos dados','','Ex.: janeiro a junho de 2026.')}${comp}`;
+  else if(r.ramo==='E')body=`${pill('mde')}${pill('pitcic')}${ck('req.E.fins','O que o estudo deve esclarecer?',E_FIM)}${rd('req.E.meio','Qual a natureza da tropa ou do meio considerado?',ent(E_MEIO),'opts2')}
+   ${tx('req.E.pontos','Pontos de referência','Ponto de observação, origem e destino do itinerário ou objetivo, conforme o caso.')}${rd('req.E.epoca','Para que época do ano?',ent(E_EPOCA),'opts2')}${comp}`;
+  else if(r.ramo==='F')body=`${pill('metadados')}${ck('req.F.material','De que material o Sr dispõe?',F_MAT)}${tx('req.F.qtd','Quantidade aproximada de arquivos')}
+   ${rd('req.F.origem','O que se conhece sobre a origem do material?',ent(F_ORIG),'opts2')}${ck('req.F.saber','O que o Sr necessita saber?',F_SABER)}
+   <p class="hint">Não anexar o material neste aplicativo. Ele segue com o pedido, por canal seguro. Quanto a pessoas, o produto apresenta descrição, não identificação.</p>${comp}`;
+  else if(r.ramo==='N')body=`<div class="alert">O analista fará contato para completar o pedido. As três respostas abaixo abreviam esse contato.</div>
+   ${ta('req.livre','Descrição da necessidade','Responder, se possível: o que se deseja visualizar ou saber; para qual finalidade; o que já se possui (cartas, imagens, planilhas).')}`;
+  else body='<div class="alert">Retornar ao passo anterior e informar o tipo de necessidade.</div>';
+ }
+ if(s===6)body=`${pill('formatos')}${rd('req.formato','Em que formato o Sr necessita receber o produto?',ent(FORMATO,v=>[v[0],v[1]]),'opts2')}
+  ${r.formato==='impresso'?rd('req.tamanho','Onde a impressão será empregada?',ent(TAM,v=>[v[0],v[1]]),'opts2')+papel(r.tamanho)+sel('req.vias','Número de vias',['1','2','3','4','5','6'].map(n=>[n,n]))+(+r.vias>2?ta('req.justif','Justificar a necessidade de mais de duas vias'):''):''}
+  <div class="row">${sel('req.sigilo','Grau de sigilo pretendido',Object.entries(SIGILO),0)}${sel('req.atualiza','Trata-se de atualização de produto anterior?',[['nao','Não'],['sim','Sim']],0)}</div>`;
+ if(s===7){
+  const d=deduce(r);
+  body=`<div class="stack"><h3>Pedido</h3>${kv(linhasPedido(r))}</div>
+  <div class="stack"><h3>Viabilidade</h3>${d.prio?`<span class="prio"><i>${d.prio}</i>Prioridade sugerida: ${PRIO_TXT[d.prio]}</span>`:''}${matriz(d.prio)}${alerts(d)}</div>
+  <div class="stack"><h3>Pendências</h3>${d.pe.length?`<div class="alert crit">${d.pe.map(esc).join('; ')}.</div>`:'<div class="alert ok">Sem pendências.</div>'}</div>
+  <div class="stack"><h3>Arquivo do pedido</h3>${S.gen?`<div class="alert ok">Arquivo gerado em ${S.gen.em}. Código de conferência: <strong>${S.gen.cod}</strong>.</div>
+   <p class="hint">Salvar o arquivo e remeter por canal seguro. <strong>Citar o código de conferência no documento de remessa</strong>: é a assinatura desse documento que vincula o pedido ao solicitante. O analista carrega o arquivo no módulo Analista, que confere o código.</p>
+   <div class="btns"><button class="pri save" data-act="save" data-src="out-json" data-name="pedido-geoint.json">Salvar arquivo</button><button data-act="copy" data-src="out-json">Copiar conteúdo</button>
+   <button data-act="exp">Exportar resumo</button>${PERFIL==='analista'?'<button data-act="to-an">Carregar no módulo Analista</button>':''}</div>
+   <details><summary>Ver conteúdo do arquivo</summary><textarea class="code" id="out-json" readonly aria-label="Conteúdo do arquivo do pedido">${esc(S.gen.json)}</textarea></details>`
+   :`<p class="hint">O arquivo reúne as respostas e recebe um código de conferência. ${d.pe.length?'Há pendências: o arquivo pode ser gerado assim mesmo, e o analista as receberá para sanar.':''}</p>
+   <div class="btns"><button class="pri" data-act="gerar">Gerar arquivo</button></div>`}<span class="hint" id="msg" role="status"></span></div>`;
+ }
+ return `<div class="stack"><h1>Pedido de produto</h1>
+ <ol class="steps">${STEPS.map((t,i)=>`<li class="${i===s?'on':i<s?'done':''}">${i+1}. ${t}</li>`).join('')}</ol></div>
+ <section class="card"><h2>${STEPS[s]}</h2>${body}
+  <div class="btns" style="margin-top:6px"><button data-act="prev" ${s===0?'disabled':''}>Retornar</button>${s<7?'<button class="pri" data-act="next">Prosseguir</button>':''}
+  <button data-act="ex" style="margin-left:auto">Preencher com exemplo fictício</button><button data-act="clear">Limpar</button></div></section>`;
+}
+function vAnalista(){
+ const a=S.an;
+ const carga=`<section class="card"><h2>Carregar pedido</h2>
+  <textarea class="code" id="in-json" style="min-height:110px" placeholder="Colar aqui o conteúdo do arquivo do pedido" aria-label="Conteúdo do arquivo do pedido"></textarea>
+  <div class="btns"><button class="pri" data-act="load">Carregar o conteúdo colado</button><label class="f" style="flex-direction:row;align-items:center;gap:8px" for="in-file">ou abrir o arquivo <input type="file" id="in-file" accept=".json,.txt,application/json"></label>
+  <button data-act="load-ex" style="margin-left:auto">Carregar exemplo fictício</button></div><span class="hint" id="msg" role="status"></span></section>`;
+ if(!a)return `<div class="stack"><h1>Ficha de demanda</h1><p class="lead">Carregar o arquivo do pedido recebido por canal seguro. A ficha é montada em seguida.</p></div>${carga}`;
+ const r=a.req,d=deduce(r),rot=ROT[d.ramo],pes=d.ramo==='F'&&r.F.saber.includes('pessoas');
+ const done=rot?rot.filter((_,i)=>a.rot[i]).length:0;
+ return `<div class="stack"><h1>Ficha de demanda</h1>${r.exemplo?'<p class="lead">Pedido carregado: <strong>exemplo fictício</strong>.</p>':''}${a.integ==='ok'?`<div class="alert ok">Arquivo conferido. Código ${esc(r._cod)}, gerado em ${esc(r._em)}.</div>`:a.integ==='alterado'?'<div class="alert crit">O conteúdo não confere com o código de conferência: o arquivo foi alterado após a geração. Confirmar com o solicitante.</div>':a.integ==='semcod'?'<div class="alert">Arquivo sem código de conferência. Não é possível verificar se foi alterado.</div>':''}
+  <div class="btns"><button data-act="unload">Carregar outro pedido</button></div></div>
+ <section class="card layer"><h2><small>CAMADA 1</small>O pedido como foi formulado</h2>${kv(linhasPedido(r))}</section>
+ <section class="card layer l2"><h2><small>CAMADA 2</small>Tradução técnica</h2>${d.prio?`<span class="prio"><i>${d.prio}</i>${PRIO_TXT[d.prio]}</span>`:''}${kv(linhasTec(d))}
+  <div class="stack"><h3>Alertas</h3>${alerts(d)}</div>
+  <div class="stack"><h3>Pendências a sanar com o solicitante</h3>${d.pe.length?`<div class="alert crit">${d.pe.map(esc).join('; ')}.</div>`:'<div class="alert ok">Pedido completo.</div>'}</div></section>
+ <section class="card layer l3"><h2><small>CAMADA 3</small>Roteiro: ${esc(d.produto)}</h2>
+  ${rot?`<p class="hint">Orientação, não prescrição. ${done} de ${rot.length} etapas assinaladas.</p><ol class="rot">${rot.map(([t,x],i)=>`<li><label class="opt"><input type="checkbox" id="rot-${i}" data-bool="an.rot.${i}" ${a.rot[i]?'checked':''}><span><b>${t}</b><small>${x}</small></span></label></li>`).join('')}</ol>`
+  :'<div class="alert">Roteiro a definir após contato com o solicitante.</div>'}
+  ${pes?`<div class="stack"><h3>Descrição de pessoas (SCCIAP)</h3>
+   ${a.pessoas.map((p,i)=>`<div class="card" style="background:var(--sunken)"><div class="btns"><strong>Pessoa ${i+1}</strong><button class="sm" data-act="del-p" data-i="${i}" style="margin-left:auto">Excluir</button></div>
+    ${SCCIAP.map(([k,l])=>`<div class="sc"><span>${l}</span><input type="text" id="p${i}-${k}" data-path="an.pessoas.${i}.${k}" value="${esc(p[k])}" aria-label="${l}, pessoa ${i+1}">
+     <select id="p${i}-${k}-c" data-path="an.pessoas.${i}.${k}C" aria-label="Estado da mente: ${l}">${['certeza','opinião','dúvida'].map(c=>`<option ${p[k+'C']===c?'selected':''}>${c}</option>`).join('')}</select></div>`).join('')}</div>`).join('')}
+   <div class="btns"><button data-act="add-p">Incluir pessoa</button></div></div>
+   <div class="stack"><h3>Identificação de pessoa</h3><p class="hint">Etapa separada, somente quando autorizada. O aplicativo não compara rostos nem armazena imagens: apenas registra o procedimento.</p>
+   <div class="row">${tx('an.ident.aut','Autoridade que autorizou')}${tx('an.ident.mat','Material de comparação')}</div>
+   ${sel('an.ident.res','Resultado',[['','Não realizada'],['Compatível','Compatível'],['Inconclusivo','Inconclusivo'],['Incompatível','Incompatível']],0)}</div>`:''}</section>
+ <section class="card"><h2>Parecer de viabilidade</h2>
+  ${rd('an.parecer.res','A seção tem condições de atender?',[['Atende','Atende'],['Atende em parte','Atende em parte'],['Não atende','Não atende']],'opts2')}
+  <div class="row">${dt('an.parecer.prazo','Prazo estimado de entrega')}${tx('an.parecer.analista','Analista responsável')}</div>
+  ${ta('an.parecer.falta','O que falta para iniciar ou para atender por completo')}${ta('an.parecer.obs','Observações ao solicitante')}
+  <div class="btns"><button class="pri" data-act="parecer">Gerar parecer</button></div>
+  ${a.texto?`<textarea class="code" id="out-par" readonly aria-label="Texto do parecer">${esc(a.texto)}</textarea><div class="btns"><button data-act="copy" data-src="out-par">Copiar parecer</button><button class="save" data-act="save" data-src="out-par" data-name="parecer-geoint.txt">Salvar parecer</button></div><span class="hint" id="msg2" role="status"></span>`:''}</section>
+ <section class="card"><h2>Prazos de referência da seção</h2><p class="hint">Em dias. Ajustar conforme efetivo, meios e acesso a dados. Ficam registrados apenas neste navegador.</p>
+  <div class="row">${Object.entries(RAMOS).filter(([k])=>k!=='N').map(([k,v])=>`<label class="f" for="cfg-${k}">${v.p}<input type="number" min="1" id="cfg-${k}" data-cfg="${k}" value="${cfg[k]}"></label>`).join('')}
+  <label class="f" for="cfg-obt">Nova obtenção de imagem (mínimo)<input type="number" min="1" id="cfg-obt" data-cfg="obt" value="${cfg.obt}"></label></div>
+  <div class="btns"><button data-act="cfg">Aplicar prazos</button></div></section>`;
+}
+function vBib(){
+ const man=[['Manual de Campanha Geoinformação','EB20-MC-10.209, 1ª edição, 2014','Conceitos de geoinformação e seu emprego na Força Terrestre.','https://bdex.eb.mil.br/jspui/bitstream/123456789/11917/1/EB20MC10209.pdf'],
+  ['Manual de Campanha Processo de Integração Terreno, Condições Meteorológicas, Inimigo e Considerações Civis (PITCIC)','EB70-MC-10.336, 1ª edição, 2023','Aprovado pela Portaria COTER/C Ex nº 275, de 26 de maio de 2023. Disponível no Portal da Doutrina do Exército.',''],
+  ['Manual Técnico Geointeligência','EB70-MT-70.402, 1ª edição, 2019','Em vigor. Será substituído pelo Manual de Campanha de Geointeligência.',''],
+  ['Manual de Campanha de Geointeligência','Em edição','Será incluído após a publicação.','']];
+ const ext=[['GEOINT Basic Doctrine, Publication 1.0','National System for Geospatial Intelligence (EUA), 2018','Doutrina básica de Geointeligência: definição, dados, processo e profissionais. Em inglês.','https://www.nga.mil/resources/GEOINT_Basic_Doctrine_Publication_10_.html'],
+  ['Joint Publication 2-03, Geospatial Intelligence in Joint Operations','Joint Chiefs of Staff (EUA), 2017','Geointeligência nas operações conjuntas, com a relação de produtos e serviços padronizados. Em inglês.','https://irp.fas.org/doddir/dod/jp2_03.pdf']];
+ const art=[['Do pixel ao contexto: integração doutrinária e analítica entre IMINT e GEOINT na produção de Inteligência','Revista Doutrina Militar Terrestre, v. 14, n. 45, 2026','Relação entre a Inteligência de Imagens e a Geointeligência na produção do conhecimento.','https://ebrevistas.eb.mil.br/DMT/article/view/14219/11392'],
+  ['Modelos deep learning e imagens radar SAR: um estudo sobre detecção e identificação de alvos militares na Amazônia','A Lucerna, Ano XII, nº 13, 2023, p. 61','Emprego de aprendizado profundo sobre imagens de radar de abertura sintética.',''],
+  ['New GEOINT fusion analysis tool could play role in ABMS, JADC2 systems','Janes, 5 de novembro de 2020','Ferramenta de fusão de dados de múltiplas fontes para analistas de Geointeligência. Em inglês.','https://www.janes.com/defence-intelligence-insights/defence-news/new-geoint-fusion-analysis-tool-could-play-role-in-abms-jadc2-systems_13437'],
+  ['Detecting the Invisible: Using Foundational Context to Reveal Force Protection and Battlespace Posture','Janes, estudo técnico','Análise técnica e geoespacial combinadas para interpretar indicadores, com exemplos do conflito Rússia-Ucrânia. Em inglês.','https://www.janes.com/defence-intelligence-insights/defence-and-national-security-analysis/detecting-the-invisible-using-foundational-context-to-reveal-force-protection-and-battlespace-posture']];
+ const li=L=>L.map(([t,c,x,u])=>`<div class="lib"><strong>${t}</strong><code>${c}</code><span class="muted">${x}</span>${u?`<a href="${u}" target="_blank" rel="noopener">Acessar a publicação</a>`:''}</div>`).join('');
+ return `<div class="stack"><h1>Biblioteca</h1><p class="lead">Conceitos e publicações afetas à Geointeligência. Os documentos não ficam no aplicativo.</p></div>
+ <section class="card"><h2>O Sr sabia?</h2>${Object.keys(PILLS).map(pill).join('')}</section>
+ <section class="card"><h2>Manuais</h2><div>${li(man)}</div><p class="hint">Confirmar a edição vigente antes de citar.</p></section>
+ <section class="card"><h2>Publicações estrangeiras</h2><div>${li(ext)}</div></section>
+ <section class="card"><h2>Artigos</h2><div>${li(art)}</div></section>
+ <section class="card"><h2>Créditos das imagens</h2><p class="muted">Emblema, fundos de tela, carta com relevo, modelos tridimensionais do terreno e realces de água e de vegetação: produção do autor. Imagem de radar e realce de terreno exposto: contêm dados Copernicus Sentinel modificados; os topônimos sobre as imagens são do OpenStreetMap. Imagens de instalação, embarcação, aeronave destruída e sensor termal: obtidas em operação, não classificadas, de uso autorizado. Imagem anotada de avaliação de danos: Departamento de Defesa dos EUA. Mapa de calor de atividades físicas: © Strava 2017, Mapbox, OpenStreetMap, DigitalGlobe. As demais ilustrações são sintéticas, desenhadas para este aplicativo, e não representam áreas reais.</p></section>`;
+}
+
+/* ---------- render e eventos ---------- */
+const app=document.getElementById('app');
+const route=()=>['inicio','solicitante','avaliacao','teste','biblioteca'].concat(PERFIL==='analista'?['analista']:[]).includes(location.hash.slice(1))?location.hash.slice(1):'inicio';
+function render(keep){
+ const r=route(),act=keep&&document.activeElement?document.activeElement.id:null;
+ app.innerHTML={inicio:vInicio,solicitante:vSolic,analista:vAnalista,biblioteca:vBib,avaliacao:vAval,teste:vTeste}[r]();
+ document.querySelectorAll('nav a').forEach(a=>a.getAttribute('href')==='#'+r?a.setAttribute('aria-current','page'):a.removeAttribute('aria-current'));
+ if(act){const e=document.getElementById(act);if(e)e.focus({preventScroll:true});}
+ if(r==='inicio')drawCarta();
+ drawThumbs();
+}
+const say=(m,id='msg')=>{const e=document.getElementById(id)||document.getElementById('msg');if(e)e.textContent=m;};
+function copy(text,srcId){
+ const mid=srcId==='out-par'?'msg2':'msg';
+ const fb=()=>{const e=srcId&&document.getElementById(srcId);if(e){const dd=e.closest('details');if(dd)dd.open=true;e.focus();e.select();say('Cópia automática indisponível. O texto está selecionado: copiar pelo teclado.',mid);}};
+ try{navigator.clipboard.writeText(text).then(()=>say('Copiado.',mid),fb);}catch(e){fb();}
+}
+function loadReq(txt){
+ try{const o=JSON.parse(txt);if(!o||typeof o!=='object'||!('pergunta' in o))throw 0;
+  const b=blank(),m={...b,...o};['A','B','C','D','E','F'].forEach(k=>{m[k]={...b[k],...(o[k]||{})};});S.an=blankAn(m);
+  if(o._cod){const c={...o};delete c._cod;S.an.integ=cod(JSON.stringify(c))===o._cod?'ok':'alterado';}else S.an.integ='semcod';render();window.scrollTo(0,0);}
+ catch(e){say('Conteúdo não reconhecido. Colar o arquivo do pedido completo, como gerado no módulo Solicitante.');}
+}
+app.addEventListener('input',e=>{const t=e.target;if((t.dataset.path||'').startsWith('req.'))S.gen=null;if(t.dataset.path&&(t.type==='text'||t.type==='date'||t.tagName==='TEXTAREA'))set(S,t.dataset.path,t.value);});
+app.addEventListener('change',e=>{
+ const t=e.target;if((t.dataset.path||t.dataset.arr||'').startsWith('req.'))S.gen=null;
+ if(t.id==='in-file'){const f=t.files[0];if(f){const fr=new FileReader();fr.onload=()=>loadReq(String(fr.result));fr.readAsText(f);}return;}
+ if(t.dataset.arr){const a=get(S,t.dataset.arr),i=a.indexOf(t.value);t.checked?(i<0&&a.push(t.value)):(i>=0&&a.splice(i,1));render(1);return;}
+ if(t.dataset.bool){set(S,t.dataset.bool,t.checked);render(1);return;}
+ if(t.dataset.path&&t.type==='radio'){set(S,t.dataset.path,t.value);render(1);return;}
+ if(t.dataset.path&&t.tagName==='SELECT'){set(S,t.dataset.path,t.value);if(t.dataset.rr)render(1);return;}
+});
+app.addEventListener('click',e=>{
+ const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;
+ if(a==='next'){S.step=Math.min(7,S.step+1);render();window.scrollTo(0,0);}
+ if(a==='prev'){S.step=Math.max(0,S.step-1);render();window.scrollTo(0,0);}
+ if(a==='ex'){S.req=exemplo();S.gen=null;render();}
+ if(a==='clear'){S.req=blank();S.gen=null;S.step=0;render();}
+ if(a==='gerar'){gerar();render();}
+ if(a==='av-gerar'){const v=S.av;v.texto='AVALIAÇÃO PÓS-ENTREGA\n\nCódigo de conferência do pedido: '+(v.cod||NI)+'\nProduto recebido: '+(v.prod||NI)+'\nRespondeu à pergunta formulada: '+(SN[v.resp]||NI)+'\nChegou a tempo de apoiar a decisão: '+(SN2[v.tempo]||NI)+'\nFormato atendeu ao emprego previsto: '+(SN2[v.formato]||NI)+'\nCompreendido sem esclarecimento: '+(SN2[v.clareza]||NI)+'\n\nA aperfeiçoar:\n'+(v.faltou||NI);render();}
+ if(a==='te-gerar'){const v=S.te;v.texto='FICHA DE AVALIAÇÃO DO TESTE - versão 0.9\n\nCódigo do avaliador: '+(v.aval||NI)+'\nCaso: '+(v.caso||NI)+'\nCondição: '+(PERF[v.perfil]||NI)+'\n\n1. Perguntas compreendidas sem ajuda: '+(SN[v.q1]||NI)+'\n2. Tempo de preenchimento adequado: '+(SN2[v.q2]||NI)+' ('+(v.min||'?')+' min)\n3. Resumo e alertas corresponderam ao pretendido: '+(SN[v.q3]||NI)+(v.perfil==='an'?'\n4. Ficha de demanda suficiente para iniciar: '+(SN[v.q4]||NI):'')+'\n\nA alterar, retirar ou acrescentar:\n'+(v.q5||NI);render();}
+ if(a==='skin'){skin=b.dataset.k;const R=document.documentElement;if(skin)R.dataset.skin=skin;else delete R.dataset.skin;try{localStorage.setItem('geoint-skin',skin);}catch(x){}drawBg();render();}
+ if(a==='exp'){const t=textoPedido(S.req,deduce(S.req))+'\n\nCódigo de conferência: '+S.gen.cod+'\nCitar este código no documento de remessa do pedido.';if(DL)Promise.resolve().then(()=>DL.save({filename:'resumo-pedido-geoint.txt',data:t})).then(()=>say('Resumo salvo.'),()=>copy(t,'out-json'));else copy(t,'out-json');}
+ if(a==='copy'){copy(document.getElementById(b.dataset.src).value,b.dataset.src);}
+ if(a==='save'&&DL){const v=document.getElementById(b.dataset.src).value,mid=b.dataset.src==='out-par'?'msg2':'msg';Promise.resolve().then(()=>DL.save({filename:b.dataset.name,data:v})).then(()=>say('Arquivo salvo.',mid),()=>say('O arquivo não foi salvo. Empregar o botão de copiar.',mid));}
+ if(a==='to-an'){loadReq(S.gen.json);location.hash='#analista';window.scrollTo(0,0);}
+ if(a==='load'){loadReq(document.getElementById('in-json').value);}
+ if(a==='load-ex'){S.an=blankAn(exemplo());render();window.scrollTo(0,0);}
+ if(a==='unload'){S.an=null;render();window.scrollTo(0,0);}
+ if(a==='add-p'){S.an.pessoas.push({});render();}
+ if(a==='del-p'){S.an.pessoas.splice(+b.dataset.i,1);render();}
+ if(a==='cfg'){document.querySelectorAll('[data-cfg]').forEach(i=>{const n=parseInt(i.value,10);if(n>0)cfg[i.dataset.cfg]=n;});try{localStorage.setItem('geoint-prazos',JSON.stringify(cfg));}catch(x){}render();}
+ if(a==='parecer'){
+  const A=S.an,r=A.req,d=deduce(r),p=A.parecer;
+  A.texto='PARECER DE VIABILIDADE'+(r.exemplo?' (EXEMPLO FICTÍCIO)':'')+'\n\nSolicitante: '+([r.nome,r.om].filter(Boolean).join(', ')||NI)+'\nPergunta: '+(r.pergunta||NI)+'\nProduto: '+d.produto
+   +'\n\nResultado: '+(p.res||NI)+'\nPrazo estimado de entrega: '+brDate(p.prazo)+'\nPrioridade sugerida: '+(d.prio?d.prio+' ('+PRIO_TXT[d.prio]+')':'indefinida')
+   +'\n\nAlertas:\n'+(d.al.length?d.al.map(x=>'- '+x[1]).join('\n'):'- nenhum')+'\n\nPendências:\n'+(d.pe.length?d.pe.map(x=>'- '+x).join('\n'):'- nenhuma')
+   +(p.falta?'\n\nO que falta para atender:\n'+p.falta:'')+(p.obs?'\n\nObservações:\n'+p.obs:'')+'\n\nAnalista: '+(p.analista||NI);
+  render();const o=document.getElementById('out-par');if(o)o.scrollIntoView({block:'center'});
+ }
+});
+window.addEventListener('hashchange',()=>{render();});
+let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{drawBg();if(route()==='inicio')drawCarta();},200);});
+drawBg();
+render();
+</script>
+<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
+</body>
+</html>
