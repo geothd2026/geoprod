@@ -88,7 +88,7 @@ nav a[aria-current="page"]{background:var(--bar-ink);color:var(--bar)}
 :root[data-theme="dark"] #bgimg{background-image:url(img/fundo-escuro.jpg);mix-blend-mode:screen}
 .notice,main{position:relative;z-index:1}
 main{max-width:860px;margin:0 auto;padding:24px 16px 64px;display:flex;flex-direction:column;gap:20px}
-.lead{color:var(--muted);max-width:65ch}
+.lead{color:var(--muted);text-align:justify;hyphens:none;-webkit-hyphens:none}
 .stack{display:flex;flex-direction:column;gap:14px}
 .row{display:flex;gap:12px;flex-wrap:wrap}
 .row>*{flex:1 1 220px}
@@ -120,7 +120,7 @@ legend{font-weight:500;font-size:.93rem;padding:0;margin-bottom:6px}
 .pill>span,.just{text-align:justify;hyphens:none;-webkit-hyphens:none}
 .hero,main>.card:not(.layer){position:relative;border-radius:0}
 .hero{border:1px solid var(--line);padding:26px 24px}
-.hero .lead{text-align:justify;text-align-last:center;hyphens:none;-webkit-hyphens:none}
+.hero .lead{max-width:65ch;text-align-last:center}
 .hero::before,.hero::after,main>.card:not(.layer)::before,main>.card:not(.layer)::after{content:"";position:absolute;width:24px;height:24px;border:3px solid var(--trim);pointer-events:none}
 .hero::before,main>.card:not(.layer)::before{left:-2px;top:-2px;border-right:0;border-bottom:0}
 .hero::after,main>.card:not(.layer)::after{right:-2px;bottom:-2px;border-left:0;border-top:0}
@@ -158,12 +158,12 @@ button:disabled{opacity:.5;cursor:default}
 .save{display:none}
 body.can-save .save{display:inline-block}
 .steps{display:flex;gap:4px;flex-wrap:wrap;list-style:none;margin:0;padding:0;font-size:.8rem}
-.steps li{padding:4px 9px;border-radius:3px;border:1px solid var(--line);color:var(--muted);background:var(--surface)}
+.steps li{flex:1 1 auto;text-align:center;padding:4px 9px;border-radius:3px;border:1px solid var(--line);color:var(--muted);background:var(--surface)}
 .steps li.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .steps li.done{color:var(--accent);border-color:var(--accent)}
 .pill{background:var(--relevo-soft);border-left:4px solid var(--relevo);padding:12px 14px;font-size:.92rem;display:flex;flex-direction:column;gap:4px}
 .pill b{font-family:var(--display);color:var(--relevo);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase}
-.alert{padding:10px 12px;font-size:.92rem;border-left:4px solid var(--warn);background:var(--warn-soft)}
+.alert{padding:10px 12px;font-size:.92rem;border-left:4px solid var(--warn);background:var(--warn-soft);text-align:justify;hyphens:none;-webkit-hyphens:none}
 .alert.crit{border-color:var(--crit);background:var(--crit-soft)}
 .alert.ok{border-color:var(--veg);background:var(--veg-soft)}
 dl.kv{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:6px 14px;margin:0;font-size:.93rem}
@@ -185,6 +185,13 @@ ol.rot .opt span b::before{content:counter(r) ". ";font-family:var(--mono);color
 .muted{color:var(--muted);font-size:.9rem}
 @media (max-width:480px){h1{font-size:1.5rem}#carta{height:160px}.sc{grid-template-columns:1fr 1fr}.sc>span{grid-column:1/-1;font-weight:500}dl.kv{grid-template-columns:1fr}dl.kv dt{margin-top:6px}}
 @media (prefers-reduced-motion:no-preference){.opt,.mode,button{transition:border-color .15s,background-color .15s}}
+@media (max-width:620px){
+ nav{flex-wrap:nowrap;max-width:100%;gap:2px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ nav::-webkit-scrollbar{display:none}
+ nav a{padding:5px 6px;font-size:.76rem;white-space:nowrap}
+}
+@media (max-width:380px){nav a{padding:5px 4px;font-size:.72rem}}
+
 </style>
 </head>
 <body>
@@ -196,7 +203,7 @@ ol.rot .opt span b::before{content:counter(r) ". ";font-family:var(--mono);color
     <a href="#inicio">Início</a><a href="#solicitante">Solicitante</a><a href="#avaliacao">Avaliação</a><a href="#analista">Analista</a><a href="#biblioteca">Biblioteca</a>
   </nav>
 </div></header>
-<div class="notice"><div>Protótipo de trabalho individual. Não constitui sistema oficial. Nada do que for digitado é transmitido ou armazenado: o pedido existe apenas nesta tela e no arquivo gerado. Empregar somente dados ostensivos.</div></div>
+<div class="notice"><div>Protótipo de trabalho individual. Não constitui sistema oficial. Nada do que for digitado é transmitido ou armazenado: a demanda existe apenas nesta tela e no arquivo gerado. Empregar somente dados ostensivos.</div></div>
 <main id="app"></main>
 
 <script>
@@ -214,7 +221,7 @@ const brDate=s=>s?s.split('-').reverse().join('/'):NI;
 const USUARIO={decisor:'Comandante, chefe ou diretor (decisor)',em:'Estado-maior ou seção',tropa:'Tropa no terreno',analista:'Outro analista ou agência de Inteligência'};
 const USO={apres:'Apresentação ou briefing',plan:'Planejamento',campo:'Emprego no terreno',tela:'Consulta em tela',anexo:'Anexo a documento'};
 const CONSEQ={decisao:['Decisão ou operação fica sem apoio de Inteligência','alta'],atraso:['O planejamento sofre atraso','alta'],incompleto:['O trabalho fica menos completo, sem prejuízo direto','baixa'],nenhuma:['Sem consequência imediata','baixa']};
-const ONDE={local:'Município ou localidade',ar:'Área de responsabilidade de OM',ponto:'Ponto e raio',eixo:'Itinerário entre dois pontos',kml:'Arquivo KML, remetido em anexo ao pedido',coord:'Coordenadas'};
+const ONDE={local:'Município ou localidade',ar:'Área de responsabilidade de OM',ponto:'Ponto e raio',eixo:'Itinerário entre dois pontos',kml:'Arquivo KML, remetido em anexo à demanda',coord:'Coordenadas'};
 const EXT={inst:['Instalação ou quarteirão','1:1.000 a 1:10.000'],cidade:['Bairro ou cidade','1:25.000 a 1:100.000'],regiao:['Vários municípios','1:250.000 a 1:1.000.000'],estado:['Estado ou área maior','1:1.000.000 ou menor']};
 const RAMOS={
  A:{q:'Conhecer uma área e o que nela existe',p:'Mapa temático',pronto:1},
@@ -227,13 +234,17 @@ const RAMOS={
 const B_LOCAL={inst:'Instalação',urb:'Área urbana',eixo:'Eixo ou via',rural:'Área rural ou de fronteira',outro:'Outro'};
 const B_SABER={exist:'Existência de algo no local',qtd:'Quantidade',ativ:'Atividade ou funcionamento',acess:'Acessos e entorno',med:'Medidas',danos:'Danos'};
 const B_REC={qualquer:'Qualquer data atende',ano:'Do último ano',mes:'Do último mês',evento:'Posterior a evento específico'};
-const B_DET={bairro:['Bairros e grandes áreas','baixa (até 30 m)'],edif:['Edificações e vias','alta (até 5 m)'],veic:['Viaturas e pequenos objetos','altíssima (abaixo de 1 m)']};
+const B_DET={regional:['Grandes extensões e visão regional','baixa (acima de 30 m)'],
+ bairro:['Bairros, talhões agrícolas e corpos d’água','média (5 a 30 m)'],
+ edif:['Edificações e vias','alta (1 a 5 m)'],
+ veic:['Viaturas e pequenos objetos','altíssima, submétrica (abaixo de 1 m)'],
+ pess:['Pessoas, material e detalhes construtivos','ultra-alta, por SARP (GSD de 1 a 5 cm)']};
 const F_MAT={foto:'Fotografia',video:'Vídeo',drone:'Imagem de aeronave ou SARP',rede:'Publicação em rede social'};
 const F_ORIG={sim:'Data e local conhecidos',parte:'Conhecidos em parte',nao:'Desconhecidos'};
 const F_SABER={onde:'Local em que foi obtido',quando:'Data e hora em que foi obtido',equip:'Equipamento, armamento ou viatura presentes',pessoas:'Efetivo presente e atividade (descrição)',autent:'Autenticidade do material',med:'Medidas'};
 const FORMATO={tela:['Consulta em tela','PDF'],camadas:['Ligar e desligar camadas','GeoPDF'],earth:['Abrir no Google Earth','KMZ'],sig:['Emprego em SIG','GeoTIFF ou vetor'],impresso:['Impressão','PDF para impressão']};
 const TAM={pasta:['Pasta ou caderneta','A4 ou A3'],mesa:['Mesa de planejamento','A2 ou A1'],parede:['Parede (carta de situação)','A0']};
-const SIGILO={ost:'Ostensivo',rest:'Acesso restrito',def:'A definir pela seção'};
+const SIGILO={ost:'Ostensivo',rest:'Acesso restrito',def:'A ser definido'};
 const A_FIM={orient:'Orientação geral e localização',plan:'Planejamento de operação ou exercício',apres:'Apresentação a autoridade',ctrl:'Controle de área de responsabilidade ou patrimonial',desloc:'Apoio a deslocamento'};
 const A_TEMAS={lim:'Limites e divisas',loc:'Localidades',vias:'Rede viária (rodovias, ferrovias, hidrovias)',aero:'Aeródromos e portos',hidro:'Hidrografia',relevo:'Relevo e altimetria',veg:'Vegetação e uso do solo',infra:'Infraestruturas críticas (energia, comunicações, barragens, dutos)',om:'Organizações militares e áreas patrimoniais',front:'Faixa de fronteira',esp:'Áreas especiais (indígenas, quilombolas, assentamentos, unidades de conservação)',serv:'Serviços públicos (saúde, educação)'};
 const A_FUNDO={simples:'Fundo cartográfico simples',relevo:'Relevo sombreado',imagem:'Imagem de satélite',analista:'A critério do analista'};
@@ -249,34 +260,35 @@ const E_FIM={mob:'Mobilidade e restrições ao movimento',corr:'Corredores de mo
 const E_MEIO={ape:'A pé',rodas:'Motorizada (sobre rodas)',blind:'Mecanizada ou blindada',aerom:'Aeromóvel',emb:'Embarcada (fluvial)',na:'Não se aplica'};
 const E_EPOCA={seca:'Estação seca',chuva:'Estação chuvosa',atual:'Situação atual',ind:'Indiferente'};
 /* Imagens de exemplo por opção: chave "caminho.valor" -> arquivo em img/. Preenchido quando as imagens ostensivas forem recebidas. */
-const IMG={'req.ramo.A':'carta.jpg','req.ramo.B':'bda.jpg','req.ramo.C':'@mud','req.ramo.D':'@calor','req.ramo.E':'3d.jpg','req.ramo.F':'draga.jpg',
- 'req.B.detalhe.bairro':'@res30','req.B.detalhe.edif':'@res5','req.B.detalhe.veic':'@res06','req.C.detalhe.bairro':'@res30','req.C.detalhe.edif':'@res5','req.C.detalhe.veic':'@res06',
+const IMG={'req.ramo.A':'carta.jpg','req.ramo.B':'bda.jpg','req.ramo.C':'@mud','req.ramo.D':'@calor','req.ramo.E':'3d.jpg','req.ramo.F':'termo.png',
+ 'req.B.detalhe.regional':'@res60','req.B.detalhe.bairro':'@res30','req.B.detalhe.edif':'@res5','req.B.detalhe.veic':'@res06','req.B.detalhe.pess':'instalacao.jpg','req.C.detalhe.regional':'@res60','req.C.detalhe.bairro':'@res30','req.C.detalhe.edif':'@res5','req.C.detalhe.veic':'@res06','req.C.detalhe.pess':'instalacao.jpg',
  'req.A.fundo.simples':'@fsimples','req.A.fundo.relevo':'dta.jpg','req.A.fundo.imagem':'s2-realce.jpg'};
 
 const PILLS={
- pergunta:['Um bom pedido cabe em uma pergunta','"Necessito de um mapa da região" gera retrabalho. "Por qual itinerário uma viatura pesada alcança o ponto X em segurança?" gera um produto.'],
- oportunidade:['Princípio da oportunidade','O conhecimento só tem valor se chegar a tempo de apoiar a decisão. Informar a data-limite de utilidade, e não apenas a data desejada.'],
+ pergunta:['Uma boa demanda cabe em uma pergunta','"Necessito de um mapa da região" gera retrabalho. "Por qual itinerário uma viatura pesada alcança o ponto X em segurança?" gera um produto.'],
+ oportunidade:['Princípio da Oportunidade','O conhecimento só tem valor se chegar a tempo de apoiar a decisão. Informar a data-limite de utilidade e não apenas a data desejada.'],
  escala:['Escala grande, área pequena','Escala grande (1:10.000) representa área pequena com muito detalhamento. Escala pequena (1:1.000.000) representa área grande com pouco detalhamento.'],
- geoint:['O que é Geointeligência','Disciplina da Inteligência Militar que explora e analisa imagens e informações geoespaciais para descrever, avaliar e visualizar feições, fenômenos e atividades localizados no terreno. Relaciona o que foi observado ao local e ao momento.'],
- niveis:['Detectar, reconhecer, identificar','Detectar é constatar que há algo no local. Reconhecer é definir a classe do objeto. Identificar é definir o tipo exato. Cada nível exige imagem de maior detalhamento que o anterior.'],
- resolucao:['Resolução espacial','É a dimensão, no terreno, do menor elemento que a imagem registra. Com 30 m distinguem-se bairros; com 5 m, edificações; abaixo de 1 m, viaturas.'],
- revisita:['Imagem atual nem sempre está disponível','O satélite só retorna ao mesmo ponto após certo intervalo, e a cobertura de nuvens pode inutilizar a passagem. Quanto mais atual e detalhada a imagem solicitada, maior o prazo necessário.'],
- metadados:['Remeter o arquivo original','O original preserva data, hora e equipamento. Cópias que transitaram por aplicativos de mensagem e redes sociais costumam perder esses dados.'],
- mapa:['O mapa temático é o principal produto','Representa, sobre a base cartográfica, o resultado da análise de um tema. Informar o tema e a finalidade evita um mapa carregado e de difícil leitura.'],
+ geoint:['O que é Geointeligência?','Disciplina de Inteligência que explora e analisa imagens e informações geoespaciais para descrever, avaliar e visualizar feições, fenômenos e atividades localizados no terreno. Relaciona o que foi observado ao local e ao momento - Espaço e Tempo.'],
+ niveis:['Níveis de Interpretação - Detectar, Reconhecer, Identificar','Detectar é constatar que há algo no local. Reconhecer é definir a classe do objeto. Identificar é definir o tipo exato. Cada nível exige imagem de maior detalhamento que o anterior.'],
+ resolucao:['Resolução Espacial','É a dimensão, no terreno, do menor elemento que a imagem registra. Acima de 30 m, grandes extensões; de 5 m a 30 m, bairros e talhões; de 1 m a 5 m, edificações e vias; abaixo de 1 m, viaturas. Abaixo disso, somente por voo sobre o local.'],
+ revisita:['Imagem atual nem sempre está disponível','O satélite só retorna ao mesmo ponto após certo intervalo, e a cobertura de nuvens pode inutilizar a passagem. Quanto mais atual e detalhada a imagem solicitada, maior o prazo necessário para obtê-la.'],
+ metadados:['Difusão do produto - arquivo original','O arquivo original preserva os metadados - data, hora e equipamento usado. Cópias que transitaram por aplicativos de mensagem e redes sociais perdem dados essenciais. Difusão somente por rede segura.'],
+ mapa:['O mapa temático é o principal produto','Representa, sobre a base cartográfica, o resultado da análise de um tema. Informar o tema e a finalidade evita um mapa sobrecarregado e de difícil compreensão.'],
  dados:['Sem localização não há análise espacial','Cada registro precisa de coordenada, endereço ou localidade. Planilhas com uma linha por registro e colunas de data e local abreviam o trabalho.'],
- pitcic:['O estudo do terreno alimenta o PITCIC','Restrições ao movimento, corredores de mobilidade, vias de acesso e acidentes capitais são levantados a partir do terreno. Informar a natureza da tropa e a época do ano muda o resultado.',[['carta3d.jpg','Carta sobre modelo tridimensional do terreno.']]],
- radar:['O radar obtém imagem à noite e sob nuvens','Quando a atualidade for essencial e houver cobertura de nuvens, o analista pode recorrer à imagem de radar. A leitura é diferente da de uma fotografia: superfícies lisas, como a água, aparecem escuras.',[['s1-radar.jpg','Imagem de radar Sentinel-1.']]],
+ pitcic:['O estudo do terreno alimenta o PITCIC','Restrições ao movimento, corredores de mobilidade, vias de acesso e acidentes capitais são levantados a partir do estudo detalhado do terreno. Informar a natureza da tropa e a época do ano impacta significativamente no resultado.',[['carta3d.jpg','Carta topográfica sobre modelo digital de elevação - molde 3D do terreno.']]],
+ radar:['O radar obtém imagem à noite e sob nuvens','Quando a resolução temporal for essencial e houver cobertura de nuvens, o analista pode recorrer à imagem de radar. A leitura é diferente da de uma fotografia: superfícies lisas, como a água, aparecem escuras.',[['s1-radar.jpg','Imagem de radar SAR Sentinel-1.']]],
  realce:['A mesma imagem pode realçar temas diferentes','A combinação de faixas do sensor destaca água, vegetação ou terreno exposto. É o que permite apontar onde algo mudou.',[['s2-agua.jpg','Realce de água.'],['s2-veg.jpg','Realce de vegetação.']]],
- termal:['O sensor termal registra calor, não luz','Distingue pessoas, viaturas com motor aquecido e focos de fogo, inclusive à noite. Não atravessa nuvens espessas.',[['termal.jpg','Imagem termal: pessoas em deslocamento sob vegetação.']]],
- hex:['Concentração ou quantitativo por área','O mapa de calor mostra onde o fenômeno se concentra. O quantitativo por área permite comparar municípios, bairros ou quadrículas.',[['@hex','Ilustração sintética de quantitativo por quadrícula.']]],
- pvo:['Percepção Visual de Objetivos (PVO)','O analista de imagens classifica o que observa em 22 categorias de objetivos: aeronaves e aeródromos; sistemas de mísseis; equipamentos eletrônicos; instalações militares; petróleo e derivados; atividades militares; transposição de brechas e cursos d’água; embarcações; vias de comunicação; terreno; faixa costeira; pontes; represas e eclusas; portos e estaleiros; instalações ferroviárias; instalações industriais; energia elétrica; avaliação de danos cinéticos; obstáculos defensivos; áreas urbanas; camuflagem; ser humano. Informar o tipo de local orienta a análise.',[['draga.jpg','Categoria embarcações: draga em curso d’água.'],['instalacao.jpg','Instalação em imagem aérea vertical.']]],
- mde:['Modelo digital de elevação','Representa o relevo em três dimensões. Sobre ele se calculam declividade, áreas vistas e ocultas a partir de um ponto e perfis de itinerário.',[['mde-malha.jpg','Modelo digital de elevação em malha.'],['mde-img.jpg','Imagem sobreposta ao modelo de elevação.']]],
+ termal:['O sensor termal registra calor, não luz','Distingue pessoas, viaturas com motor aquecido e focos de fogo, inclusive à noite. Não atravessa nuvens espessas.',[['termal.jpg','Imagem termal: tropa em deslocamento sob vegetação densa.']]],
+ hex:['Concentração ou quantitativo por área','O Mapa de Kernell (Mapa de Calor) interpola variáveis - Evento, Local e Frequência, mostrando onde o fenômeno se concentra. A densidade de eventos por área permite realizar análise estatística adequada - aspecto importante de Geografia Humana.',[['basemap14.png','Mapa de Kernell - Densidade de eventos por área.'],['geoestatistica6.png','Densidade de eventos por amostra hexagonal.']]],
+ pvo:['Percepção Visual de Objetivos (PVO)','O analista de imagens classifica o que observa em 22 categorias de objetivos: aeronaves e aeródromos; sistemas de mísseis; equipamentos eletrônicos; instalações militares; petróleo e derivados; atividades militares; transposição de brechas e cursos d’água; embarcações; vias de comunicação; terreno; faixa costeira; pontes; represas e eclusas; portos e estaleiros; instalações ferroviárias; instalações industriais; energia elétrica; avaliação de danos cinéticos; obstáculos defensivos; áreas urbanas; camuflagem; ser humano. Informar o local ou tipo de alvo orienta a análise.',[['nam_atlantico.png','Categoria Embarcações: NAM A-140 - Marinha do Brasil.'],['refin.png','Refinaria de petróleo em imagem aérea oblíqua.']]],
+ mde:['Modelo Digital de Elevação','Representa o relevo em três dimensões. Sobre ele se calculam declividade, áreas vistas e ocultas a partir de um ponto e perfis de elevação, entre outros.',[['mde-malha.jpg','Modelo Digital de Elevação em malha.'],['mde_img2.png','Estudo do terreno com MDE.']]],
  abertos:['Dados de fonte aberta revelam padrões','Em 2018, um mapa de calor de atividades físicas publicado por um aplicativo de corrida expôs rotinas e percursos no entorno de instalações militares em vários países. A concentração de registros no espaço é, por si, informação. Para a Contrainteligência, o caso mostra que o rastro digital do pessoal também é fonte para o oponente.',[['strava.jpg','Mapa de calor de atividades físicas em área urbana. © Strava 2017, Mapbox, OpenStreetMap, DigitalGlobe.']]],
- danos:['Avaliação de danos cinéticos','É uma das categorias de objetivos da PVO. Compara a situação anterior e a posterior a uma ação para informar o que foi atingido, em que grau e se o objetivo permanece em condições de uso. Exige imagem posterior à ação e, de preferência, uma anterior para comparação.',[['danos.jpg','Aeronave destruída em solo, em imagem aérea vertical.'],['bda.jpg','Avaliação de danos em imagem anotada. Fonte: Departamento de Defesa dos EUA.']]],
- bdgex:['Consultar primeiro o BDGEx','O Banco de Dados Geográficos do Exército reúne cartas e geoinformação já produzidas. O que nele estiver disponível dispensa pedido.'],
+ danos:['Avaliação de Danos Cinéticos','É uma das categorias de objetivos da PVO. Compara a situação anterior e a posterior a uma ação cinética para informar o que foi atingido, em que grau e se o alvo permanece em condições de uso. Exige imagem posterior à ação e, de preferência, uma anterior para comparação.',[['danos.jpg','Aeronave destruída em solo, em imagem aérea vertical.'],['bda.jpg','Avaliação de danos em imagem anotada. Fonte: Departamento de Defesa dos EUA.']]],
+ sarp:['Detalhe centimétrico exige sobrevoo sobre o local','O satélite comercial de maior resolução espacial chega à ordem de 30 cm. Abaixo disso a imagem vem de SARP (drone) ou de aeronave, e a resolução deixa de ser fixa: passa a ser o GSD, que depende da altura de voo, da lente e do sensor, e costuma ficar entre 1 cm e 5 cm. Para identificar um objeto com segurança, e não apenas detectá-lo, ele deve medir de 3 a 5 vezes o GSD. O voo depende de autorização e acresce prazo ao atendimento da demanda.',[['instalacao.jpg','Instalação em imagem de SARP, com detalhe centimétrico.'],['drone2.jpg','Drone Cat 0 em missão aérea para obtenção de imagens.']]],
+ bdgex:['Consultar primeiro o BDGEx','O Banco de Dados Geográficos do Exército reúne cartas e geoinformação já produzidas. O que nele estiver disponível dispensa nova demanda.'],
  formatos:['O formato decorre do emprego','GeoPDF permite ligar e desligar camadas. KMZ é visualizado sobre o globo no Google Earth. GeoTIFF atende a quem opera sistema de informações geográficas.']
 };
-const pill=k=>`<aside class="pill"><b>O Sr sabia?</b><strong>${PILLS[k][0]}</strong><span>${PILLS[k][1]}</span>${PILLS[k][2]?`<div class="pfs">${PILLS[k][2].map(([s,c])=>`<figure class="pf">${s[0]==='@'?`<canvas class="thumb" data-draw="${s.slice(1)}" width="448" height="280" role="img" aria-label="${c}"></canvas>`:`<img src="img/${s}" alt="${c}">`}<small>${c}</small></figure>`).join('')}</div>`:''}</aside>`;
+const pill=k=>`<aside class="pill"><b>Você sabia?</b><strong>${PILLS[k][0]}</strong><span>${PILLS[k][1]}</span>${PILLS[k][2]?`<div class="pfs">${PILLS[k][2].map(([s,c])=>`<figure class="pf">${s[0]==='@'?`<canvas class="thumb" data-draw="${s.slice(1)}" width="448" height="280" role="img" aria-label="${c}"></canvas>`:`<img src="${IMGP}${s}" alt="${c}">`}<small>${c}</small></figure>`).join('')}</div>`:''}</aside>`;
 
 const ROT={
  B:[['Confirmar a pergunta','Reler a pergunta do solicitante e definir o nível exigido: detectar, reconhecer ou identificar.'],
@@ -293,7 +305,7 @@ const ROT={
  A:[['Confirmar finalidade e usuário','Definem o que destacar e o que omitir.'],
     ['Definir área, escala e sistema de referência','Compatíveis com a extensão da área e com o tamanho de saída.'],
     ['Reunir os dados','Consultar primeiro o BDGEx; em seguida, outras bases oficiais. Registrar fonte e data de cada camada.'],
-    ['Verificar a qualidade dos dados','Atualidade, completude e coerência entre camadas, todas no mesmo sistema de referência.'],
+    ['Verificar a qualidade dos dados','Atualização, completude e coerência entre camadas, todas no mesmo sistema de referência.'],
     ['Integrar os dados do solicitante','Conferir coordenadas e eliminar duplicidades.'],
     ['Selecionar e generalizar','Somente os temas solicitados, simplificados conforme a escala.'],
     ['Simbolizar','Convenções cartográficas e simbologia militar em vigor. O tema fica em destaque sobre o fundo.'],
@@ -360,13 +372,14 @@ const exemplo=()=>Object.assign(blank(),{exemplo:true,nome:'Cap FULANO (fictíci
  decisao:'Planejar o reconhecimento de ponte e de seus acessos.',pergunta:'A ponte e seus acessos permitem o trânsito de viaturas pesadas? Há indícios de utilização recente?',uso:'plan',
  dataDesejada:plus(10),dataLimite:plus(20),conseq:'atraso',ondeModo:'local',onde:'Ponte sobre o Rio Exemplo, município fictício',extensao:'inst',ramo:'B',
  B:{local:'eixo',saber:['acess','med','ativ'],recencia:'mes',detalhe:'veic'},formato:'tela',sigilo:'def'});
-const CFG_DEF={A:10,B:7,C:21,D:5,E:7,F:5,N:14,obt:15};
+const CFG_DEF={A:10,B:7,C:21,D:5,E:7,F:5,N:14,obt:15,sarp:10};
 let cfg={...CFG_DEF};
 try{const s=JSON.parse(localStorage.getItem('geoint-prazos')||'null');if(s)cfg={...CFG_DEF,...s};}catch(e){}
 const blankAn=r=>({req:r,rot:{},pessoas:[],ident:{},parecer:{},texto:'',integ:null});
 const cod=s=>{let x=2166136261;for(let i=0;i<s.length;i++){x^=s.charCodeAt(i);x=Math.imul(x,16777619);}return ('0000000'+(x>>>0).toString(16)).slice(-8).toUpperCase().replace(/^(.{4})/,'$1-');};
 function gerar(){const r=JSON.parse(JSON.stringify(S.req));delete r._cod;r._em=new Date().toISOString().slice(0,16).replace('T',' ')+' UTC';r._cod=cod(JSON.stringify(r));S.gen={json:JSON.stringify(r,null,1),cod:r._cod,em:r._em};}
 const PERFIL=(document.documentElement&&document.documentElement.dataset.perfil)||'analista';
+const IMGP=location.pathname.indexOf('/analista/')>=0?'../img/':'img/'; // pasta das imagens conforme a versão
 const S={req:blank(),step:0,an:null,gen:null,av:{},te:{}};
 const SN={sim:'Sim',parte:'Em parte',nao:'Não'},SN2={sim:'Sim',nao:'Não'};
 let DL=null;
@@ -390,23 +403,26 @@ function deduce(r){
  if(ramo==='B'){
   resol=B_DET[r.B.detalhe]?.[1]||null;
   if(r.B.recencia)fonte=(r.B.recencia==='mes'||r.B.recencia==='evento')?'Provável nova obtenção de imagem':'Acervo existente';
-  if((r.B.detalhe==='veic'||r.B.detalhe==='edif')&&(r.extensao==='regiao'||r.extensao==='estado'))al.push(['warn','O detalhamento solicitado é incompatível com a extensão da área. Reduzir a área ou aceitar menor detalhamento.']);
+  if(r.B.detalhe==='pess'){fonte='Obtenção por SARP (drone) ou aeronave; GSD de 1 a 5 cm';al.push(['warn',`Resolução ultra-alta não é obtida por satélite: exige voo de SARP (drone) ou aeronave sobre o local, com autorização e prazo adicional de no mínimo ${cfg.sarp} dias.`]);}
+  if((r.B.detalhe==='veic'||r.B.detalhe==='edif'||r.B.detalhe==='pess')&&(r.extensao==='regiao'||r.extensao==='estado'))al.push(['warn','O detalhamento solicitado é incompatível com a extensão da área. Reduzir a área ou aceitar menor detalhamento.']);
   if(r.B.detalhe==='veic'&&(r.B.recencia==='mes'||r.B.recencia==='evento'))al.push(['warn',`Imagem atual de altíssima resolução depende de nova obtenção, com prazo de no mínimo ${cfg.obt} dias.`]);
   if(!r.B.local)pe.push('Tipo de local');if(!r.B.saber.length)pe.push('O que se necessita saber sobre o local');
-  if(!r.B.recencia)pe.push('Atualidade exigida da imagem');if(!r.B.detalhe)pe.push('Nível de detalhamento');
+  if(!r.B.recencia)pe.push('Resolução temporal exigida da imagem');if(!r.B.detalhe)pe.push('Nível de detalhamento');
  }
  if(ramo==='F'){
   if(r.F.origem==='nao')al.push(['warn','Sem origem conhecida, a análise terá limitações, que deverão constar do produto.']);
+  if(r.F.saber.includes('pessoas'))al.push(['warn','A descrição de pessoas depende da resolução do material recebido: imagem orbital não alcança esse nível de detalhe. Pela regra prática da fotogrametria, o alvo deve medir de 3 a 5 vezes o GSD para ser identificado. Avaliar a necessidade de obtenção por SARP (drone) sobre o local.']);
   if(r.F.material.includes('rede'))al.push(['warn','Material de rede social costuma chegar sem metadados. Havendo o arquivo original, remetê-lo.']);
   if(!r.F.material.length)pe.push('Tipo de material');if(!r.F.origem)pe.push('Origem do material');if(!r.F.saber.length)pe.push('O que se necessita saber sobre o material');
  }
  if(ramo==='A'){
-  if(r.A.dados&&r.A.dados!=='nao')al.push(['warn','Os dados próprios devem ser remetidos em anexo ao pedido.']);
+  if(r.A.dados&&r.A.dados!=='nao')al.push(['warn','Os dados próprios devem ser remetidos em anexo à demanda.']);
   if(r.A.temas.length>7)al.push(['warn','Muitos temas em um único mapa prejudicam a clareza. Avaliar a divisão em mais de um produto.']);
   if(!r.A.fim)pe.push('Finalidade do mapa');if(!r.A.temas.length)pe.push('Temas a representar');if(!r.A.fundo)pe.push('Fundo do mapa');
  }
  if(ramo==='C'){
   resol=B_DET[r.C.detalhe]?.[1]||null;
+  if(r.C.detalhe==='pess'){fonte='Obtenção por SARP (drone) ou aeronave; GSD de 1 a 5 cm';al.push(['warn',`Resolução ultra-alta não é obtida por satélite: exige voo de SARP (drone) ou aeronave sobre o local, com autorização e prazo adicional de no mínimo ${cfg.sarp} dias.`]);}
   if(r.C.de&&r.C.ate&&r.C.ate<r.C.de)al.push(['crit','A data final do período é anterior à data inicial.']);
   if(r.C.modo==='period')al.push(['warn','O acompanhamento periódico compromete meios da seção por prazo prolongado. A frequência será confirmada no parecer.']);
   if(!r.C.tipos.length)pe.push('Tipo de mudança');if(!r.C.de)pe.push('Data inicial do período');if(!r.C.modo)pe.push('Comparação única ou acompanhamento');
@@ -415,14 +431,14 @@ function deduce(r){
  if(ramo==='D'){
   if(r.D.dados==='end'||r.D.dados==='rel')al.push(['warn','Os registros precisam ser localizados antes da análise, o que amplia o prazo.']);
   if(r.D.dados==='nao')al.push(['warn','Sem dados não há análise. A obtenção dos registros passa a integrar o prazo.']);
-  if(r.D.dados==='coord'||r.D.dados==='end')al.push(['warn','A planilha deve ser remetida em anexo ao pedido.']);
+  if(r.D.dados==='coord'||r.D.dados==='end')al.push(['warn','A planilha deve ser remetida em anexo à demanda.']);
   if(!r.D.fen)pe.push('Fenômeno a analisar');if(r.D.fen==='outro'&&!r.D.fenOutro)pe.push('Descrição do fenômeno');if(!r.D.ver.length)pe.push('O que se deseja visualizar');if(!r.D.dados)pe.push('Disponibilidade de dados');
  }
  if(ramo==='E'){
   if(r.E.fins.includes('obs')&&!r.E.pontos)pe.push('Ponto de observação');
   if(!r.E.fins.length)pe.push('Finalidade do estudo do terreno');if(!r.E.meio)pe.push('Natureza da tropa ou do meio');if(!r.E.epoca)pe.push('Época do ano');
  }
- if(ramo!=='N'&&!RAMOS[ramo].pronto)al.push(['warn','Este ramo ainda não dispõe de perguntas próprias no protótipo. O analista completará o pedido mediante contato.']);
+ if(ramo!=='N'&&!RAMOS[ramo].pronto)al.push(['warn','Este ramo ainda não dispõe de perguntas próprias no protótipo. O analista completará a demanda mediante contato.']);
  if((ramo==='N'||!RAMOS[ramo].pronto)&&!r.livre)pe.push('Descrição da necessidade');
  [['nome','Identificação do solicitante'],['om','Organização Militar'],['contato','Contato'],['decisao','O que se necessita decidir, planejar ou acompanhar'],['pergunta','Pergunta que o produto deve responder'],
   ['dataDesejada','Data desejada'],['dataLimite','Data-limite de utilidade'],['conseq','Consequência do não atendimento no prazo'],['onde','Local'],['extensao','Extensão aproximada da área'],['formato','Formato de entrega']]
@@ -441,7 +457,7 @@ function linhasPedido(r){
   ['Necessita decidir, planejar ou acompanhar',r.decisao||NI],['Pergunta a responder',r.pergunta||NI],['Emprego do produto',USO[r.uso]||NI],
   ['Data desejada',brDate(r.dataDesejada)],['Data-limite de utilidade',brDate(r.dataLimite)],['Consequência do não atendimento',CONSEQ[r.conseq]?.[0]||NI],
   ['Local',(ONDE[r.ondeModo]||'')+': '+(r.onde||NI)],['Extensão da área',EXT[r.extensao]?.[0]||NI],['Tipo de necessidade',r.ramo?RAMOS[r.ramo].q:NI]];
- if(r.ramo==='B')L.push(['Tipo de local',B_LOCAL[r.B.local]||NI],['Necessita saber',list(r.B.saber,B_SABER)],['Atualidade da imagem',B_REC[r.B.recencia]||NI],['Deve permitir distinguir',B_DET[r.B.detalhe]?.[0]||NI]);
+ if(r.ramo==='B')L.push(['Tipo de local',B_LOCAL[r.B.local]||NI],['Necessita saber',list(r.B.saber,B_SABER)],['Resolução temporal da imagem',B_REC[r.B.recencia]||NI],['Deve permitir distinguir',B_DET[r.B.detalhe]?.[0]||NI]);
  if(r.ramo==='F')L.push(['Material',list(r.F.material,F_MAT)+(r.F.qtd?' ('+r.F.qtd+' arquivos)':'')],['Origem',F_ORIG[r.F.origem]||NI],['Necessita saber',list(r.F.saber,F_SABER)]);
  if(r.ramo==='A')L.push(['Finalidade do mapa',A_FIM[r.A.fim]||NI],['Temas',list(r.A.temas,A_TEMAS)],['Fundo',A_FUNDO[r.A.fundo]||NI],['Dados próprios',DADOS_P[r.A.dados]||NI],...(r.A.destaque?[['Destaque',r.A.destaque]]:[]));
  if(r.ramo==='C')L.push(['Tipo de mudança',list(r.C.tipos,C_TIPO)],['Período',brDate(r.C.de)+' a '+(r.C.ate?brDate(r.C.ate):'data atual')],['Modalidade',(C_MODO[r.C.modo]||NI)+(r.C.modo==='period'&&r.C.freq?', '+C_FREQ[r.C.freq].toLowerCase():'')],['Deve permitir distinguir',B_DET[r.C.detalhe]?.[0]||NI]);
@@ -472,7 +488,7 @@ const papel=t=>{const on=k=>({pasta:['A4','A3'],mesa:['A2','A1'],parede:['A0']}[
 const kv=L=>`<dl class="kv">${L.map(([a,b])=>`<dt>${esc(a)}</dt><dd>${esc(b)}</dd>`).join('')}</dl>`;
 const alerts=d=>d.al.length?d.al.map(([t,m])=>`<div class="alert ${t==='crit'?'crit':''}">${esc(m)}</div>`).join(''):'<div class="alert ok">Sem alertas de viabilidade.</div>';
 function textoPedido(r,d){
- return 'PEDIDO DE PRODUTO DE GEOINTELIGÊNCIA'+(r.exemplo?' (EXEMPLO FICTÍCIO)':'')+'\n\n'+linhasPedido(r).map(([a,b])=>a+': '+b).join('\n')
+ return 'DEMANDA DE PRODUTO DE GEOINTELIGÊNCIA'+(r.exemplo?' (EXEMPLO FICTÍCIO)':'')+'\n\n'+linhasPedido(r).map(([a,b])=>a+': '+b).join('\n')
   +'\n\nTRADUÇÃO TÉCNICA\n'+linhasTec(d).map(([a,b])=>a+': '+b).join('\n')
   +'\n\nALERTAS\n'+(d.al.length?d.al.map(a=>'- '+a[1]).join('\n'):'- nenhum')
   +'\n\nPENDÊNCIAS\n'+(d.pe.length?d.pe.map(p=>'- '+p).join('\n'):'- nenhuma');
@@ -484,7 +500,7 @@ const tx=(p,l,h='',ph='')=>`<label class="f" for="${fid(p)}">${l}${h?`<small>${h
 const ta=(p,l,h='',ph='')=>`<label class="f" for="${fid(p)}">${l}${h?`<small>${h}</small>`:''}<textarea id="${fid(p)}" data-path="${p}" placeholder="${esc(ph)}">${esc(get(S,p))}</textarea></label>`;
 const dt=(p,l,h='')=>`<label class="f" for="${fid(p)}">${l}${h?`<small>${h}</small>`:''}<input type="date" id="${fid(p)}" data-path="${p}" value="${esc(get(S,p))}"></label>`;
 const sel=(p,l,opts,rr=1)=>`<label class="f" for="${fid(p)}">${l}<select id="${fid(p)}" data-path="${p}" ${rr?'data-rr="1"':''}>${opts.map(([v,t])=>`<option value="${v}" ${get(S,p)===v?'selected':''}>${esc(t)}</option>`).join('')}</select></label>`;
-const rd=(p,l,opts,cls='')=>`<fieldset><legend>${l}</legend><div class="${cls||'stack'}" style="gap:8px">${opts.map(([v,t,s,tag])=>{const im=IMG[p+'.'+v];return `<label class="opt"><input type="radio" id="${fid(p)}-${v}" name="${fid(p)}" data-path="${p}" value="${v}" ${get(S,p)===v?'checked':''}>${im?(im[0]==='@'?`<canvas class="thumb" data-draw="${im.slice(1)}" width="224" height="168" role="img" aria-label="Ilustração: ${esc(t)}"></canvas>`:`<img src="img/${im}" alt="Exemplo: ${esc(t)}">`):''}<span>${esc(t)}${s?`<small>${esc(s)}</small>`:''}</span>${tag?`<i class="tag">${tag}</i>`:''}</label>`;}).join('')}</div></fieldset>`;
+const rd=(p,l,opts,cls='')=>`<fieldset><legend>${l}</legend><div class="${cls||'stack'}" style="gap:8px">${opts.map(([v,t,s,tag])=>{const im=IMG[p+'.'+v];return `<label class="opt"><input type="radio" id="${fid(p)}-${v}" name="${fid(p)}" data-path="${p}" value="${v}" ${get(S,p)===v?'checked':''}>${im?(im[0]==='@'?`<canvas class="thumb" data-draw="${im.slice(1)}" width="224" height="168" role="img" aria-label="Ilustração: ${esc(t)}"></canvas>`:`<img src="${IMGP}${im}" alt="Exemplo: ${esc(t)}">`):''}<span>${esc(t)}${s?`<small>${esc(s)}</small>`:''}</span>${tag?`<i class="tag">${tag}</i>`:''}</label>`;}).join('')}</div></fieldset>`;
 const ck=(p,l,dic)=>`<fieldset><legend>${l} <span class="hint">Assinalar quantos forem necessários.</span></legend><div class="opts2">${Object.entries(dic).map(([v,t])=>`<label class="opt"><input type="checkbox" id="${fid(p)}-${v}" data-arr="${p}" value="${v}" ${get(S,p).includes(v)?'checked':''}><span>${esc(t)}</span></label>`).join('')}</div></fieldset>`;
 const ent=(dic,f=x=>x)=>Object.entries(dic).map(([k,v])=>[k,...[].concat(f(v))]);
 
@@ -548,7 +564,7 @@ function cena(g,W,H){ /* área urbana fictícia: quadras, via e viaturas */
 }
 function pixelar(c,f){const t=document.createElement('canvas');t.width=Math.ceil(c.width/f);t.height=Math.ceil(c.height/f);const tg=t.getContext('2d');tg.drawImage(c,0,0,t.width,t.height);const g=c.getContext('2d');g.imageSmoothingEnabled=false;g.drawImage(t,0,0,c.width,c.height);}
 const DRAW={
- res30:(g,W,H,c)=>{cena(g,W,H);pixelar(c,16);},res5:(g,W,H,c)=>{cena(g,W,H);pixelar(c,5);},res06:(g,W,H)=>cena(g,W,H),
+ res60:(g,W,H,c)=>{cena(g,W,H);pixelar(c,30);},res30:(g,W,H,c)=>{cena(g,W,H);pixelar(c,16);},res5:(g,W,H,c)=>{cena(g,W,H);pixelar(c,9);},res06:(g,W,H)=>cena(g,W,H),
  frelevo:(g,W,H)=>paint(g,W,H,'shade',2.6,3.2,1.7),
  fsimples:(g,W,H)=>{g.fillStyle='#f1efe2';g.fillRect(0,0,W,H);line(g,[[0,60],[70,74],[120,40],[224,58]],'#9a9a8e',1.5,[5,4]);line(g,[[120,40],[132,168]],'#9a9a8e',1.5,[5,4]);
   line(g,[[0,140],[60,120],[110,128],[224,96]],'#2f7fb0',3);line(g,[[20,0],[58,70],[150,104],[224,150]],'#c23b2e',2.5);line(g,[[150,104],[170,0]],'#c23b2e',2);
@@ -586,14 +602,14 @@ function vInicio(){
  const k='pergunta';
  return `<figure><canvas id="carta" role="img" aria-label="Carta ilustrativa com hipsometria, curvas de nível, hidrografia e quadriculado"></canvas>
  <figcaption>Ilustração: relevo sintético com hipsometria, sombreamento, curvas de nível, hidrografia e quadriculado. Não representa área real.</figcaption></figure>
- <div class="hero"><div class="embw">${EMB.replace('class="emb"','class="emb big"')}</div><div class="stack"><h1>O pedido parte da necessidade de conhecimento, não do tipo de produto</h1>
+ <div class="hero"><div class="embw">${EMB.replace('class="emb"','class="emb big"')}</div><div class="stack"><h1>A demanda parte da necessidade de conhecimento, não do tipo de produto</h1>
  <p class="lead">O solicitante responde ao questionário apresentado. O aplicativo converte as respostas em requisitos técnicos e fornece ao analista uma ficha de demanda que orienta o trabalho de produção.</p></div></div>
  <div class="modes">
-  <a class="mode" href="#solicitante"><h2>Solicitante</h2><span>Necessito de um produto e vou formalizar o pedido. Oito passos.</span></a>
-  ${PERFIL==='analista'?'<a class="mode" href="#analista"><h2>Analista</h2><span>Recebi um pedido e vou carregar a ficha de demanda, o roteiro e o parecer de viabilidade.</span></a>':''}
+  <a class="mode" href="#solicitante"><h2>Solicitante</h2><span>Necessito de um produto e vou formalizar a demanda. Oito passos.</span></a>
+  ${PERFIL==='analista'?'<a class="mode" href="#analista"><h2>Analista</h2><span>Recebi uma demanda e vou carregar a ficha, o roteiro e o parecer de viabilidade.</span></a>':''}
   <a class="mode" href="#teste"><h2>Roteiro de teste</h2><span>Casos fictícios e ficha de avaliação para a fase de testes.</span></a>
  </div>
- <div class="flow"><b>Pedido</b>→<b>Remessa por canal seguro</b>→<b>Ficha de demanda</b>→<b>Parecer de viabilidade</b>→<b>Produto</b></div>
+ <div class="flow"><b>Demanda</b>→<b>Remessa por canal seguro</b>→<b>Ficha de demanda</b>→<b>Parecer de viabilidade</b>→<b>Produto</b></div>
  ${pill(k)}
  <p class="muted">Versão 0.9, em fase de avaliação. Observações e sugestões podem ser registradas na ficha do roteiro de teste.</p>`;
 }
@@ -602,12 +618,12 @@ const sai=(t,id,nome,rot)=>t?`<textarea class="code" id="${id}" readonly aria-la
 function vAval(){
  return `<div class="stack"><h1>Avaliação do produto recebido</h1><p class="lead">Preenchida pelo solicitante após a entrega. Retorna à seção por canal seguro e orienta o aperfeiçoamento dos produtos.</p></div>
  <section class="card"><h2>Avaliação pós-entrega</h2>
-  <div class="row">${tx('av.cod','Código de conferência do pedido','Consta do resumo exportado.')}${tx('av.prod','Produto recebido','','Ex.: análise de imagens da ponte.')}</div>
+  <div class="row">${tx('av.cod','Código de conferência da demanda','Consta do resumo exportado.')}${tx('av.prod','Produto recebido','','Ex.: análise de imagens da ponte.')}</div>
   ${rd('av.resp','O produto respondeu à pergunta formulada?',ent(SN),'opts2')}
   ${rd('av.tempo','Chegou a tempo de apoiar a decisão?',ent(SN2),'opts2')}
   ${rd('av.formato','O formato atendeu ao emprego previsto?',ent(SN2),'opts2')}
   ${rd('av.clareza','Foi compreendido sem necessidade de esclarecimento?',ent(SN2),'opts2')}
-  ${ta('av.faltou','O que faltou ou deve ser aperfeiçoado')}
+  ${ta('av.faltou','O que faltou ou deve ser aperfeiçoado?')}
   <div class="btns"><button class="pri" data-act="av-gerar">Gerar avaliação</button></div>${sai(S.av.texto,'out-av','avaliacao-geoint.txt','Texto da avaliação')}<span class="hint" id="msg" role="status"></span></section>`;
 }
 const CASOS=[['Caso 1 - Análise de imagens','O S3 de um batalhão fictício planeja o reconhecimento de uma ponte sobre o Rio Exemplo. Necessita saber se a ponte e seus acessos permitem o trânsito de viaturas pesadas e se há indícios de utilização recente. O resultado deve chegar em 10 dias, para o planejamento.'],
@@ -616,26 +632,26 @@ const CASOS=[['Caso 1 - Análise de imagens','O S3 de um batalhão fictício pla
 const PERF={sol:'Solicitante (não especialista)',an:'Analista de Geointeligência'};
 function vTeste(){
  const t=S.te;
- return `<div class="stack"><h1>Roteiro de teste</h1><p class="lead">Os casos são fictícios. O objetivo é verificar se o pedido é formulado sem ajuda e se a ficha de demanda permite iniciar o trabalho.</p></div>
+ return `<div class="stack"><h1>Roteiro de teste</h1><p class="lead">Os casos são fictícios. O objetivo é verificar se a demanda é formulada sem ajuda e se a ficha de demanda permite iniciar o trabalho.</p></div>
  <section class="card"><h2>Como proceder</h2><ol class="stack" style="margin:0;padding-left:20px;gap:6px">
-  <li>Escolher um dos casos abaixo e informar o código do avaliador no primeiro passo do pedido.</li><li>Preencher o pedido no módulo Solicitante, sem consultar terceiros, e gerar o arquivo.</li>
+  <li>Escolher um dos casos abaixo e informar o código do avaliador no primeiro passo da demanda.</li><li>Preencher a demanda no módulo Solicitante, sem consultar terceiros, e gerar o arquivo.</li>
   <li>Na versão Analista: carregar o arquivo, percorrer a ficha de demanda e emitir o parecer de viabilidade.</li><li>Responder à ficha de avaliação ao final desta página e remetê-la ao responsável pelo teste.</li></ol></section>
- <section class="card"><h2>Casos</h2>${CASOS.map(([a,b])=>`<div class="stack" style="gap:4px"><h3>${a}</h3><p>${b}</p></div>`).join('')}</section>
- <section class="card"><h2>Ficha de avaliação do teste</h2>
+ <section class="card"><h2>Casos</h2>${CASOS.map(([a,b])=>`<div class="stack" style="gap:4px"><h3>${a}</h3><p class="just">${b}</p></div>`).join('')}</section>
+ <section class="card"><h2>Ficha de Avaliação</h2>
   <div class="row">${tx('te.aval','Código do avaliador','','Ex.: T-01')}${sel('te.caso','Caso percorrido',[['','Selecionar'],...CASOS.map(c=>[c[0],c[0]])],0)}</div>
   ${rd('te.perfil','Em que condição o Sr avaliou?',ent(PERF),'opts2')}
   ${rd('te.q1','As perguntas foram compreendidas sem ajuda?',ent(SN),'opts2')}
-  ${rd('te.q2','O tempo de preenchimento foi adequado?',ent(SN2),'opts2')}${tx('te.min','Tempo gasto, em minutos')}
+  ${rd('te.q2','O tempo de preenchimento foi adequado?',ent(SN2),'opts2')}${tx('te.min','Tempo gasto, em minutos:')}
   ${rd('te.q3','O resumo e os alertas corresponderam ao que se pretendia pedir?',ent(SN),'opts2')}
   ${t.perfil==='an'?rd('te.q4','A ficha de demanda trouxe o necessário para iniciar o trabalho?',ent(SN),'opts2'):''}
-  ${ta('te.q5','O que alterar, retirar ou acrescentar')}
+  ${ta('te.q5','O que alterar, retirar ou acrescentar?')}
   <div class="btns"><button class="pri" data-act="te-gerar">Gerar ficha</button></div>${sai(t.texto,'out-te','ficha-teste-geoint.txt','Texto da ficha')}<span class="hint" id="msg" role="status"></span></section>`;
 }
 const STEPS=['Solicitante','Necessidade','Prazo','Área de interesse','Tipo de necessidade','Detalhamento','Entrega','Resumo'];
 function vSolic(){
  const r=S.req,s=S.step;let body='';
  if(s===0)body=`${pill('bdgex')}<div class="row">${tx('req.nome','Posto ou graduação e nome de guerra')}${tx('req.om','Organização Militar (OM)')}</div><div class="row">${tx('req.funcao','Função')}${tx('req.contato','Contato','Ramal, RITEx ou outro meio já empregado pela seção.')}</div>
-  ${tx('req.aval','Código do avaliador','Somente na fase de testes. Identifica quem gerou o pedido; não é autenticação.','Ex.: T-01')}
+  ${tx('req.aval','Código do avaliador','Somente na fase de testes. Identifica quem gerou a demanda; não é autenticação.','Ex.: T-01')}
   ${rd('req.usuario','Quem empregará o produto?',ent(USUARIO),'opts2')}`;
  if(s===1)body=`${pill('pergunta')}${ta('req.decisao','O que o Sr necessita decidir, planejar ou acompanhar?','','Ex.: planejar o reconhecimento de ponte e de seus acessos.')}
   ${tx('req.pergunta','Necessidade de Inteligência: qual pergunta o produto deve responder?','Formular como pergunta clara e concisa.','Ex.: os acessos permitem o trânsito de viaturas pesadas?')}${rd('req.uso','Como o produto será empregado?',ent(USO),'opts2')}`;
@@ -650,8 +666,8 @@ function vSolic(){
    ${rd('req.A.fundo','Qual o fundo desejado?',ent(A_FUNDO),'opts2')}${rd('req.A.dados','O Sr dispõe de dados próprios a incluir?',ent(DADOS_P),'opts2')}
    ${tx('req.A.destaque','O que deve ficar em destaque?','Opcional.','Ex.: itinerário principal, limites da área de responsabilidade.')}${comp}`;
   else if(r.ramo==='B')body=`${pill('pvo')}${rd('req.B.local','Qual o tipo de local?',ent(B_LOCAL),'opts2')}${pill('niveis')}${ck('req.B.saber','O que o Sr necessita saber sobre o local?',B_SABER)}
-   ${pill('resolucao')}${rd('req.B.detalhe','Nível de detalhamento: o que a imagem deve permitir distinguir?',ent(B_DET,v=>v[0]))}
-   ${pill('revisita')}${rd('req.B.recencia','Qual a atualidade exigida da imagem?',ent(B_REC),'opts2')}${pill('radar')}${pill('termal')}${pill('danos')}${comp}`;
+   ${pill('resolucao')}${pill('sarp')}${rd('req.B.detalhe','Nível de detalhamento: o que a imagem deve permitir distinguir?',ent(B_DET,v=>v[0]))}
+   ${pill('revisita')}${rd('req.B.recencia','Qual a resolução temporal exigida da imagem?',ent(B_REC),'opts2')}${pill('radar')}${pill('termal')}${pill('danos')}${comp}`;
   else if(r.ramo==='C')body=`${pill('realce')}${ck('req.C.tipos','Que tipo de mudança interessa?',C_TIPO)}
    <div class="row">${dt('req.C.de','Data inicial do período')}${dt('req.C.ate','Data final do período','Em branco: até a data atual.')}</div>
    ${rd('req.C.modo','Comparação única ou acompanhamento?',ent(C_MODO),'opts2')}${r.C.modo==='period'?rd('req.C.freq','Com que frequência?',ent(C_FREQ),'opts2'):''}
@@ -663,8 +679,8 @@ function vSolic(){
    ${tx('req.E.pontos','Pontos de referência','Ponto de observação, origem e destino do itinerário ou objetivo, conforme o caso.')}${rd('req.E.epoca','Para que época do ano?',ent(E_EPOCA),'opts2')}${comp}`;
   else if(r.ramo==='F')body=`${pill('metadados')}${ck('req.F.material','De que material o Sr dispõe?',F_MAT)}${tx('req.F.qtd','Quantidade aproximada de arquivos')}
    ${rd('req.F.origem','O que se conhece sobre a origem do material?',ent(F_ORIG),'opts2')}${ck('req.F.saber','O que o Sr necessita saber?',F_SABER)}
-   <p class="hint">Não anexar o material neste aplicativo. Ele segue com o pedido, por canal seguro. Quanto a pessoas, o produto apresenta descrição, não identificação.</p>${comp}`;
-  else if(r.ramo==='N')body=`<div class="alert">O analista fará contato para completar o pedido. As três respostas abaixo abreviam esse contato.</div>
+   <p class="hint">Não anexar o material neste aplicativo. Ele segue com a demanda, por canal seguro. Quanto a pessoas, o produto apresenta descrição, não identificação.</p>${comp}`;
+  else if(r.ramo==='N')body=`<div class="alert">O analista fará contato para completar a demanda. As três respostas abaixo abreviam esse contato.</div>
    ${ta('req.livre','Descrição da necessidade','Responder, se possível: o que se deseja visualizar ou saber; para qual finalidade; o que já se possui (cartas, imagens, planilhas).')}`;
   else body='<div class="alert">Retornar ao passo anterior e informar o tipo de necessidade.</div>';
  }
@@ -673,18 +689,18 @@ function vSolic(){
   <div class="row">${sel('req.sigilo','Grau de sigilo pretendido',Object.entries(SIGILO),0)}${sel('req.atualiza','Trata-se de atualização de produto anterior?',[['nao','Não'],['sim','Sim']],0)}</div>`;
  if(s===7){
   const d=deduce(r);
-  body=`<div class="stack"><h3>Pedido</h3>${kv(linhasPedido(r))}</div>
+  body=`<div class="stack"><h3>Demanda</h3>${kv(linhasPedido(r))}</div>
   <div class="stack"><h3>Viabilidade</h3>${d.prio?`<span class="prio"><i>${d.prio}</i>Prioridade sugerida: ${PRIO_TXT[d.prio]}</span>`:''}${matriz(d.prio)}${alerts(d)}</div>
   <div class="stack"><h3>Pendências</h3>${d.pe.length?`<div class="alert crit">${d.pe.map(esc).join('; ')}.</div>`:'<div class="alert ok">Sem pendências.</div>'}</div>
-  <div class="stack"><h3>Arquivo do pedido</h3>${S.gen?`<div class="alert ok">Arquivo gerado em ${S.gen.em}. Código de conferência: <strong>${S.gen.cod}</strong>.</div>
-   <p class="hint">Salvar o arquivo e remeter por canal seguro. <strong>Citar o código de conferência no documento de remessa</strong>: é a assinatura desse documento que vincula o pedido ao solicitante. O analista carrega o arquivo no módulo Analista, que confere o código.</p>
-   <div class="btns"><button class="pri save" data-act="save" data-src="out-json" data-name="pedido-geoint.json">Salvar arquivo</button><button data-act="copy" data-src="out-json">Copiar conteúdo</button>
+  <div class="stack"><h3>Arquivo da demanda</h3>${S.gen?`<div class="alert ok">Arquivo gerado em ${S.gen.em}. Código de conferência: <strong>${S.gen.cod}</strong>.</div>
+   <p class="hint">Salvar o arquivo e remeter por canal seguro. <strong>Citar o código de conferência no documento de remessa</strong>: é a assinatura desse documento que vincula a demanda ao solicitante. O analista carrega o arquivo no módulo Analista, que confere o código.</p>
+   <div class="btns"><button class="pri save" data-act="save" data-src="out-json" data-name="demanda-geoint.json">Salvar arquivo</button><button data-act="copy" data-src="out-json">Copiar conteúdo</button>
    <button data-act="exp">Exportar resumo</button>${PERFIL==='analista'?'<button data-act="to-an">Carregar no módulo Analista</button>':''}</div>
-   <details><summary>Ver conteúdo do arquivo</summary><textarea class="code" id="out-json" readonly aria-label="Conteúdo do arquivo do pedido">${esc(S.gen.json)}</textarea></details>`
+   <details><summary>Ver conteúdo do arquivo</summary><textarea class="code" id="out-json" readonly aria-label="Conteúdo do arquivo da demanda">${esc(S.gen.json)}</textarea></details>`
    :`<p class="hint">O arquivo reúne as respostas e recebe um código de conferência. ${d.pe.length?'Há pendências: o arquivo pode ser gerado assim mesmo, e o analista as receberá para sanar.':''}</p>
    <div class="btns"><button class="pri" data-act="gerar">Gerar arquivo</button></div>`}<span class="hint" id="msg" role="status"></span></div>`;
  }
- return `<div class="stack"><h1>Pedido de produto</h1>
+ return `<div class="stack"><h1>Demanda de produto</h1>
  <ol class="steps">${STEPS.map((t,i)=>`<li class="${i===s?'on':i<s?'done':''}">${i+1}. ${t}</li>`).join('')}</ol></div>
  <section class="card"><h2>${STEPS[s]}</h2>${body}
   <div class="btns" style="margin-top:6px"><button data-act="prev" ${s===0?'disabled':''}>Retornar</button>${s<7?'<button class="pri" data-act="next">Prosseguir</button>':''}
@@ -692,19 +708,19 @@ function vSolic(){
 }
 function vAnalista(){
  const a=S.an;
- const carga=`<section class="card"><h2>Carregar pedido</h2>
-  <textarea class="code" id="in-json" style="min-height:110px" placeholder="Colar aqui o conteúdo do arquivo do pedido" aria-label="Conteúdo do arquivo do pedido"></textarea>
+ const carga=`<section class="card"><h2>Carregar demanda</h2>
+  <textarea class="code" id="in-json" style="min-height:110px" placeholder="Colar aqui o conteúdo do arquivo da demanda" aria-label="Conteúdo do arquivo da demanda"></textarea>
   <div class="btns"><button class="pri" data-act="load">Carregar o conteúdo colado</button><label class="f" style="flex-direction:row;align-items:center;gap:8px" for="in-file">ou abrir o arquivo <input type="file" id="in-file" accept=".json,.txt,application/json"></label>
   <button data-act="load-ex" style="margin-left:auto">Carregar exemplo fictício</button></div><span class="hint" id="msg" role="status"></span></section>`;
- if(!a)return `<div class="stack"><h1>Ficha de demanda</h1><p class="lead">Carregar o arquivo do pedido recebido por canal seguro. A ficha é montada em seguida.</p></div>${carga}`;
+ if(!a)return `<div class="stack"><h1>Ficha de demanda</h1><p class="lead">Carregar o arquivo da demanda recebida por canal seguro. A ficha é montada em seguida.</p></div>${carga}`;
  const r=a.req,d=deduce(r),rot=ROT[d.ramo],pes=d.ramo==='F'&&r.F.saber.includes('pessoas');
  const done=rot?rot.filter((_,i)=>a.rot[i]).length:0;
- return `<div class="stack"><h1>Ficha de demanda</h1>${r.exemplo?'<p class="lead">Pedido carregado: <strong>exemplo fictício</strong>.</p>':''}${a.integ==='ok'?`<div class="alert ok">Arquivo conferido. Código ${esc(r._cod)}, gerado em ${esc(r._em)}.</div>`:a.integ==='alterado'?'<div class="alert crit">O conteúdo não confere com o código de conferência: o arquivo foi alterado após a geração. Confirmar com o solicitante.</div>':a.integ==='semcod'?'<div class="alert">Arquivo sem código de conferência. Não é possível verificar se foi alterado.</div>':''}
-  <div class="btns"><button data-act="unload">Carregar outro pedido</button></div></div>
- <section class="card layer"><h2><small>CAMADA 1</small>O pedido como foi formulado</h2>${kv(linhasPedido(r))}</section>
+ return `<div class="stack"><h1>Ficha de demanda</h1>${r.exemplo?'<p class="lead">Demanda carregada: <strong>exemplo fictício</strong>.</p>':''}${a.integ==='ok'?`<div class="alert ok">Arquivo conferido. Código ${esc(r._cod)}, gerado em ${esc(r._em)}.</div>`:a.integ==='alterado'?'<div class="alert crit">O conteúdo não confere com o código de conferência: o arquivo foi alterado após a geração. Confirmar com o solicitante.</div>':a.integ==='semcod'?'<div class="alert">Arquivo sem código de conferência. Não é possível verificar se foi alterado.</div>':''}
+  <div class="btns"><button data-act="unload">Carregar outra demanda</button></div></div>
+ <section class="card layer"><h2><small>CAMADA 1</small>A demanda como foi formulada</h2>${kv(linhasPedido(r))}</section>
  <section class="card layer l2"><h2><small>CAMADA 2</small>Tradução técnica</h2>${d.prio?`<span class="prio"><i>${d.prio}</i>${PRIO_TXT[d.prio]}</span>`:''}${kv(linhasTec(d))}
   <div class="stack"><h3>Alertas</h3>${alerts(d)}</div>
-  <div class="stack"><h3>Pendências a sanar com o solicitante</h3>${d.pe.length?`<div class="alert crit">${d.pe.map(esc).join('; ')}.</div>`:'<div class="alert ok">Pedido completo.</div>'}</div></section>
+  <div class="stack"><h3>Pendências a sanar com o solicitante</h3>${d.pe.length?`<div class="alert crit">${d.pe.map(esc).join('; ')}.</div>`:'<div class="alert ok">Demanda completa.</div>'}</div></section>
  <section class="card layer l3"><h2><small>CAMADA 3</small>Roteiro: ${esc(d.produto)}</h2>
   ${rot?`<p class="hint">Orientação, não prescrição. ${done} de ${rot.length} etapas assinaladas.</p><ol class="rot">${rot.map(([t,x],i)=>`<li><label class="opt"><input type="checkbox" id="rot-${i}" data-bool="an.rot.${i}" ${a.rot[i]?'checked':''}><span><b>${t}</b><small>${x}</small></span></label></li>`).join('')}</ol>`
   :'<div class="alert">Roteiro a definir após contato com o solicitante.</div>'}
@@ -718,17 +734,20 @@ function vAnalista(){
    ${sel('an.ident.res','Resultado',[['','Não realizada'],['Compatível','Compatível'],['Inconclusivo','Inconclusivo'],['Incompatível','Incompatível']],0)}</div>`:''}</section>
  <section class="card"><h2>Parecer de viabilidade</h2>
   ${rd('an.parecer.res','A seção tem condições de atender?',[['Atende','Atende'],['Atende em parte','Atende em parte'],['Não atende','Não atende']],'opts2')}
+  ${rd('an.parecer.sarp','Necessita obtenção de imagens por SARP (drone) sobre o local?',ent(SN2),'opts2')}
+  ${a.parecer.sarp==='sim'?`<div class="alert">A obtenção por SARP acresce ao prazo do produto o prazo de referência da seção: ${cfg.sarp} dias. Registrar a necessidade de autorização para o voo e a fração encarregada.</div>`:''}
   <div class="row">${dt('an.parecer.prazo','Prazo estimado de entrega')}${tx('an.parecer.analista','Analista responsável')}</div>
   ${ta('an.parecer.falta','O que falta para iniciar ou para atender por completo')}${ta('an.parecer.obs','Observações ao solicitante')}
   <div class="btns"><button class="pri" data-act="parecer">Gerar parecer</button></div>
   ${a.texto?`<textarea class="code" id="out-par" readonly aria-label="Texto do parecer">${esc(a.texto)}</textarea><div class="btns"><button data-act="copy" data-src="out-par">Copiar parecer</button><button class="save" data-act="save" data-src="out-par" data-name="parecer-geoint.txt">Salvar parecer</button></div><span class="hint" id="msg2" role="status"></span>`:''}</section>
  <section class="card"><h2>Prazos de referência da seção</h2><p class="hint">Em dias. Ajustar conforme efetivo, meios e acesso a dados. Ficam registrados apenas neste navegador.</p>
   <div class="row">${Object.entries(RAMOS).filter(([k])=>k!=='N').map(([k,v])=>`<label class="f" for="cfg-${k}">${v.p}<input type="number" min="1" id="cfg-${k}" data-cfg="${k}" value="${cfg[k]}"></label>`).join('')}
-  <label class="f" for="cfg-obt">Nova obtenção de imagem (mínimo)<input type="number" min="1" id="cfg-obt" data-cfg="obt" value="${cfg.obt}"></label></div>
+  <label class="f" for="cfg-obt">Nova obtenção de imagem (mínimo)<input type="number" min="1" id="cfg-obt" data-cfg="obt" value="${cfg.obt}"></label>
+  <label class="f" for="cfg-sarp">Obtenção por SARP (drone)<input type="number" min="1" id="cfg-sarp" data-cfg="sarp" value="${cfg.sarp}"></label></div>
   <div class="btns"><button data-act="cfg">Aplicar prazos</button></div></section>`;
 }
 function vBib(){
- const man=[['Manual de Campanha Geoinformação','EB20-MC-10.209, 1ª edição, 2014','Conceitos de geoinformação e seu emprego na Força Terrestre.','https://bdex.eb.mil.br/jspui/bitstream/123456789/11917/1/EB20MC10209.pdf'],
+ const man=[['Manual de Campanha Geoinformação','EB20-MC-10.209, 1ª edição, 2014','Conceitos de Geoinformação e seu emprego na Força Terrestre.','https://bdex.eb.mil.br/jspui/bitstream/123456789/11917/1/EB20MC10209.pdf'],
   ['Manual de Campanha Processo de Integração Terreno, Condições Meteorológicas, Inimigo e Considerações Civis (PITCIC)','EB70-MC-10.336, 1ª edição, 2023','Aprovado pela Portaria COTER/C Ex nº 275, de 26 de maio de 2023. Disponível no Portal da Doutrina do Exército.',''],
   ['Manual Técnico Geointeligência','EB70-MT-70.402, 1ª edição, 2019','Em vigor. Será substituído pelo Manual de Campanha de Geointeligência.',''],
   ['Manual de Campanha de Geointeligência','Em edição','Será incluído após a publicação.','']];
@@ -740,7 +759,7 @@ function vBib(){
   ['Detecting the Invisible: Using Foundational Context to Reveal Force Protection and Battlespace Posture','Janes, estudo técnico','Análise técnica e geoespacial combinadas para interpretar indicadores, com exemplos do conflito Rússia-Ucrânia. Em inglês.','https://www.janes.com/defence-intelligence-insights/defence-and-national-security-analysis/detecting-the-invisible-using-foundational-context-to-reveal-force-protection-and-battlespace-posture']];
  const li=L=>L.map(([t,c,x,u])=>`<div class="lib"><strong>${t}</strong><code>${c}</code><span class="muted">${x}</span>${u?`<a href="${u}" target="_blank" rel="noopener">Acessar a publicação</a>`:''}</div>`).join('');
  return `<div class="stack"><h1>Biblioteca</h1><p class="lead">Conceitos e publicações afetas à Geointeligência. Os documentos não ficam no aplicativo.</p></div>
- <section class="card"><h2>O Sr sabia?</h2>${Object.keys(PILLS).map(pill).join('')}</section>
+ <section class="card"><h2>Você sabia?</h2>${Object.keys(PILLS).map(pill).join('')}</section>
  <section class="card"><h2>Manuais</h2><div>${li(man)}</div><p class="hint">Confirmar a edição vigente antes de citar.</p></section>
  <section class="card"><h2>Publicações estrangeiras</h2><div>${li(ext)}</div></section>
  <section class="card"><h2>Artigos</h2><div>${li(art)}</div></section>
@@ -768,7 +787,7 @@ function loadReq(txt){
  try{const o=JSON.parse(txt);if(!o||typeof o!=='object'||!('pergunta' in o))throw 0;
   const b=blank(),m={...b,...o};['A','B','C','D','E','F'].forEach(k=>{m[k]={...b[k],...(o[k]||{})};});S.an=blankAn(m);
   if(o._cod){const c={...o};delete c._cod;S.an.integ=cod(JSON.stringify(c))===o._cod?'ok':'alterado';}else S.an.integ='semcod';render();window.scrollTo(0,0);}
- catch(e){say('Conteúdo não reconhecido. Colar o arquivo do pedido completo, como gerado no módulo Solicitante.');}
+ catch(e){say('Conteúdo não reconhecido. Colar o arquivo da demanda completo, como gerado no módulo Solicitante.');}
 }
 app.addEventListener('input',e=>{const t=e.target;if((t.dataset.path||'').startsWith('req.'))S.gen=null;if(t.dataset.path&&(t.type==='text'||t.type==='date'||t.tagName==='TEXTAREA'))set(S,t.dataset.path,t.value);});
 app.addEventListener('change',e=>{
@@ -786,10 +805,10 @@ app.addEventListener('click',e=>{
  if(a==='ex'){S.req=exemplo();S.gen=null;render();}
  if(a==='clear'){S.req=blank();S.gen=null;S.step=0;render();}
  if(a==='gerar'){gerar();render();}
- if(a==='av-gerar'){const v=S.av;v.texto='AVALIAÇÃO PÓS-ENTREGA\n\nCódigo de conferência do pedido: '+(v.cod||NI)+'\nProduto recebido: '+(v.prod||NI)+'\nRespondeu à pergunta formulada: '+(SN[v.resp]||NI)+'\nChegou a tempo de apoiar a decisão: '+(SN2[v.tempo]||NI)+'\nFormato atendeu ao emprego previsto: '+(SN2[v.formato]||NI)+'\nCompreendido sem esclarecimento: '+(SN2[v.clareza]||NI)+'\n\nA aperfeiçoar:\n'+(v.faltou||NI);render();}
+ if(a==='av-gerar'){const v=S.av;v.texto='AVALIAÇÃO PÓS-ENTREGA\n\nCódigo de conferência da demanda: '+(v.cod||NI)+'\nProduto recebido: '+(v.prod||NI)+'\nRespondeu à pergunta formulada: '+(SN[v.resp]||NI)+'\nChegou a tempo de apoiar a decisão: '+(SN2[v.tempo]||NI)+'\nFormato atendeu ao emprego previsto: '+(SN2[v.formato]||NI)+'\nCompreendido sem esclarecimento: '+(SN2[v.clareza]||NI)+'\n\nA aperfeiçoar:\n'+(v.faltou||NI);render();}
  if(a==='te-gerar'){const v=S.te;v.texto='FICHA DE AVALIAÇÃO DO TESTE - versão 0.9\n\nCódigo do avaliador: '+(v.aval||NI)+'\nCaso: '+(v.caso||NI)+'\nCondição: '+(PERF[v.perfil]||NI)+'\n\n1. Perguntas compreendidas sem ajuda: '+(SN[v.q1]||NI)+'\n2. Tempo de preenchimento adequado: '+(SN2[v.q2]||NI)+' ('+(v.min||'?')+' min)\n3. Resumo e alertas corresponderam ao pretendido: '+(SN[v.q3]||NI)+(v.perfil==='an'?'\n4. Ficha de demanda suficiente para iniciar: '+(SN[v.q4]||NI):'')+'\n\nA alterar, retirar ou acrescentar:\n'+(v.q5||NI);render();}
  if(a==='skin'){skin=b.dataset.k;const R=document.documentElement;if(skin)R.dataset.skin=skin;else delete R.dataset.skin;try{localStorage.setItem('geoint-skin',skin);}catch(x){}drawBg();render();}
- if(a==='exp'){const t=textoPedido(S.req,deduce(S.req))+'\n\nCódigo de conferência: '+S.gen.cod+'\nCitar este código no documento de remessa do pedido.';if(DL)Promise.resolve().then(()=>DL.save({filename:'resumo-pedido-geoint.txt',data:t})).then(()=>say('Resumo salvo.'),()=>copy(t,'out-json'));else copy(t,'out-json');}
+ if(a==='exp'){const t=textoPedido(S.req,deduce(S.req))+'\n\nCódigo de conferência: '+S.gen.cod+'\nCitar este código no documento de remessa da demanda.';if(DL)Promise.resolve().then(()=>DL.save({filename:'resumo-demanda-geoint.txt',data:t})).then(()=>say('Resumo salvo.'),()=>copy(t,'out-json'));else copy(t,'out-json');}
  if(a==='copy'){copy(document.getElementById(b.dataset.src).value,b.dataset.src);}
  if(a==='save'&&DL){const v=document.getElementById(b.dataset.src).value,mid=b.dataset.src==='out-par'?'msg2':'msg';Promise.resolve().then(()=>DL.save({filename:b.dataset.name,data:v})).then(()=>say('Arquivo salvo.',mid),()=>say('O arquivo não foi salvo. Empregar o botão de copiar.',mid));}
  if(a==='to-an'){loadReq(S.gen.json);location.hash='#analista';window.scrollTo(0,0);}
@@ -802,7 +821,7 @@ app.addEventListener('click',e=>{
  if(a==='parecer'){
   const A=S.an,r=A.req,d=deduce(r),p=A.parecer;
   A.texto='PARECER DE VIABILIDADE'+(r.exemplo?' (EXEMPLO FICTÍCIO)':'')+'\n\nSolicitante: '+([r.nome,r.om].filter(Boolean).join(', ')||NI)+'\nPergunta: '+(r.pergunta||NI)+'\nProduto: '+d.produto
-   +'\n\nResultado: '+(p.res||NI)+'\nPrazo estimado de entrega: '+brDate(p.prazo)+'\nPrioridade sugerida: '+(d.prio?d.prio+' ('+PRIO_TXT[d.prio]+')':'indefinida')
+   +'\n\nResultado: '+(p.res||NI)+'\nObtenção por SARP (drone) sobre o local: '+(SN2[p.sarp]||NI)+(p.sarp==='sim'?' (prazo adicional de referência: '+cfg.sarp+' dias)':'')+'\nPrazo estimado de entrega: '+brDate(p.prazo)+'\nPrioridade sugerida: '+(d.prio?d.prio+' ('+PRIO_TXT[d.prio]+')':'indefinida')
    +'\n\nAlertas:\n'+(d.al.length?d.al.map(x=>'- '+x[1]).join('\n'):'- nenhum')+'\n\nPendências:\n'+(d.pe.length?d.pe.map(x=>'- '+x).join('\n'):'- nenhuma')
    +(p.falta?'\n\nO que falta para atender:\n'+p.falta:'')+(p.obs?'\n\nObservações:\n'+p.obs:'')+'\n\nAnalista: '+(p.analista||NI);
   render();const o=document.getElementById('out-par');if(o)o.scrollIntoView({block:'center'});

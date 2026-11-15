@@ -24,7 +24,7 @@ Abrir o endereço no Safari, tocar em Compartilhar e em "Adicionar à Tela de In
 
 ## Atualização
 
-Ao enviar arquivos alterados, mudar o número em `const C='geoint-0.9.4'`, no arquivo `sw.js`. Sem isso, os aparelhos continuam a usar a versão guardada por algum tempo.
+Ao enviar arquivos alterados, mudar o número em `const C='geoint-0.9.10'`, no arquivo `sw.js`. Sem isso, os aparelhos continuam a usar a versão guardada por algum tempo.
 
 ## Observação
 
