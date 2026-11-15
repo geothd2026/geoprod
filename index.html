@@ -151,6 +151,7 @@ details textarea{margin-top:8px}
 .opts2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px}
 .tag{font:500 .72rem var(--mono);padding:2px 7px;border-radius:3px;border:1px solid var(--line);color:var(--muted);margin-left:auto;font-style:normal;white-space:nowrap}
 .btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btns.fill button{flex:1 1 auto}
 button{font:500 .95rem var(--body);border-radius:4px;padding:9px 16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
 button.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 button.sm{padding:5px 10px;font-size:.85rem}
@@ -703,8 +704,8 @@ function vSolic(){
  return `<div class="stack"><h1>Demanda de produto</h1>
  <ol class="steps">${STEPS.map((t,i)=>`<li class="${i===s?'on':i<s?'done':''}">${i+1}. ${t}</li>`).join('')}</ol></div>
  <section class="card"><h2>${STEPS[s]}</h2>${body}
-  <div class="btns" style="margin-top:6px"><button data-act="prev" ${s===0?'disabled':''}>Retornar</button>${s<7?'<button class="pri" data-act="next">Prosseguir</button>':''}
-  <button data-act="ex" style="margin-left:auto">Preencher com exemplo fictício</button><button data-act="clear">Limpar</button></div></section>`;
+  <div class="btns fill" style="margin-top:6px"><button data-act="prev" ${s===0?'disabled':''}>Retornar</button>${s<7?'<button class="pri" data-act="next">Prosseguir</button>':''}
+  <button data-act="ex">Preencher com exemplo fictício</button><button data-act="clear">Limpar</button></div></section>`;
 }
 function vAnalista(){
  const a=S.an;
