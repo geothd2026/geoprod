@@ -80,7 +80,7 @@ nav{display:flex;gap:4px;flex-wrap:wrap}
 nav a{padding:6px 10px;border-radius:4px;text-decoration:none;color:var(--bar-muted);font-weight:500;font-size:.92rem}
 nav a[aria-current="page"]{background:var(--bar-ink);color:var(--bar)}
 .notice{background:var(--sunken);border-bottom:1px solid var(--line);font-size:.8rem;color:var(--muted)}
-.notice div{max-width:860px;margin:0 auto;padding:6px 16px}
+.notice div{max-width:860px;margin:0 auto;padding:6px 16px;text-align:justify;hyphens:none;-webkit-hyphens:none}
 #bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 #bg{display:none}
 #bgimg{position:fixed;inset:0;z-index:0;pointer-events:none;background:url(../img/fundo-claro.jpg) right bottom/cover no-repeat;mix-blend-mode:multiply}
@@ -99,10 +99,10 @@ figcaption{font-size:.8rem;color:var(--muted)}
 .modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
 .mode{background:var(--surface);border:1px solid var(--line);border-left:5px solid var(--accent);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:8px;text-decoration:none;color:inherit}
 .mode:hover{border-color:var(--accent)}
-.mode span{color:var(--muted);font-size:.93rem}
+.mode span{color:var(--muted);font-size:.93rem;text-align:justify;hyphens:none;-webkit-hyphens:none}
 .flow{display:flex;gap:8px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);align-items:center;justify-content:space-between}
 @media (max-width:760px){.flow{justify-content:center}}
-.flow b{color:var(--ink);font-weight:500;background:var(--surface);border:1px solid var(--line);padding:4px 10px;border-radius:4px}
+.flow b{color:var(--ink);font-weight:500;background:var(--surface);border:1px solid var(--line);padding:4px 10px;border-radius:4px;flex:1 1 auto;text-align:center}
 label.f{display:flex;flex-direction:column;gap:5px;font-weight:500;font-size:.93rem}
 label.f small,.hint{font-weight:400;color:var(--muted);font-size:.84rem}
 input[type=text],input[type=date],input[type=number],textarea,select{font:inherit;color:var(--ink);background:var(--sunken);border:1px solid var(--line);border-radius:4px;padding:9px 10px;width:100%}
@@ -608,11 +608,11 @@ function vInicio(){
  <div class="modes">
   <a class="mode" href="#solicitante"><h2>Solicitante</h2><span>Necessito de um produto e vou formalizar a demanda. Oito passos.</span></a>
   ${PERFIL==='analista'?'<a class="mode" href="#analista"><h2>Analista</h2><span>Recebi uma demanda e vou carregar a ficha, o roteiro e o parecer de viabilidade.</span></a>':''}
-  <a class="mode" href="#teste"><h2>Roteiro de teste</h2><span>Casos fictícios e ficha de avaliação para a fase de testes.</span></a>
+  <a class="mode" href="#teste"><h2>Roteiro de Teste</h2><span>Casos fictícios e ficha de avaliação para a fase de testes.</span></a>
  </div>
  <div class="flow"><b>Demanda</b>→<b>Remessa por canal seguro</b>→<b>Ficha de demanda</b>→<b>Parecer de viabilidade</b>→<b>Produto</b></div>
  ${pill(k)}
- <p class="muted">Versão 0.9, em fase de avaliação. Observações e sugestões podem ser registradas na ficha do roteiro de teste.</p>`;
+ <p class="muted just">Versão 0.9, em fase de avaliação. Observações e sugestões podem ser registradas na Ficha de Avaliação, constante do Roteiro de Teste.</p>`;
 }
 const EMB='<img class="emb" src="../img/emblema.png" alt="">';
 const sai=(t,id,nome,rot)=>t?`<textarea class="code" id="${id}" readonly aria-label="${rot}">${esc(t)}</textarea><div class="btns"><button data-act="copy" data-src="${id}">Copiar</button><button class="save" data-act="save" data-src="${id}" data-name="${nome}">Salvar</button></div>`:'';
