@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-skin="tatico" data-perfil="analista">
+<html lang="pt-BR" data-skin="tatico" data-perfil="analista" data-par="1">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -128,6 +128,7 @@ legend{font-weight:500;font-size:.93rem;padding:0;margin-bottom:6px}
 [data-perfil="solicitante"] .ver::after{content:" · Solicitante"}
 [data-perfil="analista"] .ver::after{content:" · Analista"}
 [data-perfil="solicitante"] nav a[href="#analista"]{display:none}
+[data-perfil="analista"] nav a[href="#solicitante"],[data-perfil="analista"] nav a[href="#avaliacao"]{display:none}
 .pfs{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:6px}
 .pf{flex:1 1 220px;max-width:420px;align-items:center;gap:4px;text-align:center}
 .pf img,.pf canvas{display:block;width:100%;height:auto;border:1px solid var(--ink);border-radius:2px}
@@ -164,7 +165,7 @@ body.can-save .save{display:inline-block}
 .steps li.done{color:var(--accent);border-color:var(--accent)}
 .pill{background:var(--relevo-soft);border-left:4px solid var(--relevo);padding:12px 14px;font-size:.92rem;display:flex;flex-direction:column;gap:4px}
 .pill b{font-family:var(--display);color:var(--relevo);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase}
-.alert{padding:10px 12px;font-size:.92rem;border-left:4px solid var(--warn);background:var(--warn-soft);text-align:justify;hyphens:none;-webkit-hyphens:none}
+.alert{padding:10px 12px;font-size:.92rem;border-left:4px solid var(--warn);background:var(--warn-soft)}
 .alert.crit{border-color:var(--crit);background:var(--crit-soft)}
 .alert.ok{border-color:var(--veg);background:var(--veg-soft)}
 dl.kv{display:grid;grid-template-columns:minmax(120px,34%) 1fr;gap:6px 14px;margin:0;font-size:.93rem}
@@ -201,7 +202,7 @@ ol.rot .opt span b::before{content:counter(r) ". ";font-family:var(--mono);color
 <header class="top"><div class="top-in">
   <div class="brand"><img class="emb" src="../img/emblema.png" alt="">Demanda de Geointeligência<span class="ver">TESTES 0.9</span></div>
   <nav aria-label="Seções">
-    <a href="#inicio">Início</a><a href="#solicitante">Solicitante</a><a href="#avaliacao">Avaliação</a><a href="#analista">Analista</a><a href="#biblioteca">Biblioteca</a>
+    <a href="#inicio">Início</a><a href="#solicitante">Solicitante</a><a href="#avaliacao">Avaliação do produto</a><a href="#analista">Analista</a><a href="#biblioteca">Biblioteca</a>
   </nav>
 </div></header>
 <div class="notice"><div>Protótipo de trabalho individual. Não constitui sistema oficial. Nada do que for digitado é transmitido ou armazenado: a demanda existe apenas nesta tela e no arquivo gerado. Empregar somente dados ostensivos.</div></div>
@@ -261,7 +262,7 @@ const E_FIM={mob:'Mobilidade e restrições ao movimento',corr:'Corredores de mo
 const E_MEIO={ape:'A pé',rodas:'Motorizada (sobre rodas)',blind:'Mecanizada ou blindada',aerom:'Aeromóvel',emb:'Embarcada (fluvial)',na:'Não se aplica'};
 const E_EPOCA={seca:'Estação seca',chuva:'Estação chuvosa',atual:'Situação atual',ind:'Indiferente'};
 /* Imagens de exemplo por opção: chave "caminho.valor" -> arquivo em img/. Preenchido quando as imagens ostensivas forem recebidas. */
-const IMG={'req.ramo.A':'carta.jpg','req.ramo.B':'bda.jpg','req.ramo.C':'@mud','req.ramo.D':'@calor','req.ramo.E':'3d.jpg','req.ramo.F':'termo.png',
+const IMG={'req.ramo.A':'carta.jpg','req.ramo.B':'bda.jpg','req.ramo.C':'@mud','req.ramo.D':'@calor','req.ramo.E':'3d.jpg','req.ramo.F':'draga.jpg',
  'req.B.detalhe.regional':'@res60','req.B.detalhe.bairro':'@res30','req.B.detalhe.edif':'@res5','req.B.detalhe.veic':'@res06','req.B.detalhe.pess':'instalacao.jpg','req.C.detalhe.regional':'@res60','req.C.detalhe.bairro':'@res30','req.C.detalhe.edif':'@res5','req.C.detalhe.veic':'@res06','req.C.detalhe.pess':'instalacao.jpg',
  'req.A.fundo.simples':'@fsimples','req.A.fundo.relevo':'dta.jpg','req.A.fundo.imagem':'s2-realce.jpg'};
 
@@ -281,11 +282,11 @@ const PILLS={
  realce:['A mesma imagem pode realçar temas diferentes','A combinação de faixas do sensor destaca água, vegetação ou terreno exposto. É o que permite apontar onde algo mudou.',[['s2-agua.jpg','Realce de água.'],['s2-veg.jpg','Realce de vegetação.']]],
  termal:['O sensor termal registra calor, não luz','Distingue pessoas, viaturas com motor aquecido e focos de fogo, inclusive à noite. Não atravessa nuvens espessas.',[['termal.jpg','Imagem termal: tropa em deslocamento sob vegetação densa.']]],
  hex:['Concentração ou quantitativo por área','O Mapa de Kernell (Mapa de Calor) interpola variáveis - Evento, Local e Frequência, mostrando onde o fenômeno se concentra. A densidade de eventos por área permite realizar análise estatística adequada - aspecto importante de Geografia Humana.',[['basemap14.png','Mapa de Kernell - Densidade de eventos por área.'],['geoestatistica6.png','Densidade de eventos por amostra hexagonal.']]],
- pvo:['Percepção Visual de Objetivos (PVO)','O Analista de Imagens classifica o que observa em 22 categorias de objetivos: Aeronaves e Aeródromos; Sistemas de Mísseis; Equipamentos Eletrônicos; Instalações Militares; Petróleo e derivados; Atividades Militares; Transposição de brechas e cursos d’água; Embarcações; Vias de Comunicação; Terreno; Faixa Costeira; Pontes; Represas e Eclusas; Portos e Estaleiros; Instalações Ferroviárias; Instalações Industriais; Energia Elétrica; Avaliação de Danos Cinéticos; Obstáculos Defensivos; Áreas Urbanas; Camuflagem; Ser Humano. Informar o local ou tipo de alvo orienta a análise.',[['nam_atlantico.png','Categoria Embarcações: NAM A-140 - Marinha do Brasil.'],['refin.png','Refinaria de petróleo em imagem aérea oblíqua.']]],
+ pvo:['Percepção Visual de Objetivos (PVO)','O analista de imagens classifica o que observa em 22 categorias de objetivos: aeronaves e aeródromos; sistemas de mísseis; equipamentos eletrônicos; instalações militares; petróleo e derivados; atividades militares; transposição de brechas e cursos d’água; embarcações; vias de comunicação; terreno; faixa costeira; pontes; represas e eclusas; portos e estaleiros; instalações ferroviárias; instalações industriais; energia elétrica; avaliação de danos cinéticos; obstáculos defensivos; áreas urbanas; camuflagem; ser humano. Informar o local ou tipo de alvo orienta a análise.',[['nam_atlantico.png','Categoria Embarcações: NAM A-140 - Marinha do Brasil.'],['refin.png','Refinaria de petróleo em imagem aérea oblíqua.']]],
  mde:['Modelo Digital de Elevação','Representa o relevo em três dimensões. Sobre ele se calculam declividade, áreas vistas e ocultas a partir de um ponto e perfis de elevação, entre outros.',[['mde-malha.jpg','Modelo Digital de Elevação em malha.'],['mde_img2.png','Estudo do terreno com MDE.']]],
  abertos:['Dados de fonte aberta revelam padrões','Em 2018, um mapa de calor de atividades físicas publicado por um aplicativo de corrida expôs rotinas e percursos no entorno de instalações militares em vários países. A concentração de registros no espaço é, por si, informação. Para a Contrainteligência, o caso mostra que o rastro digital do pessoal também é fonte para o oponente.',[['strava.jpg','Mapa de calor de atividades físicas em área urbana. © Strava 2017, Mapbox, OpenStreetMap, DigitalGlobe.']]],
  danos:['Avaliação de Danos Cinéticos','É uma das categorias de objetivos da PVO. Compara a situação anterior e a posterior a uma ação cinética para informar o que foi atingido, em que grau e se o alvo permanece em condições de uso. Exige imagem posterior à ação e, de preferência, uma anterior para comparação.',[['danos.jpg','Aeronave destruída em solo, em imagem aérea vertical.'],['bda.jpg','Avaliação de danos em imagem anotada. Fonte: Departamento de Defesa dos EUA.']]],
- sarp:['Detalhe centimétrico exige sobrevoo sobre o local','O satélite comercial de maior resolução chega à ordem de 30 cm. Abaixo disso a imagem vem de SARP (drone) ou de aeronave, e a resolução deixa de ser fixa: passa a ser o GSD, que depende da altura de voo, da lente e do sensor, e costuma ficar entre 1 cm e 5 cm. Para identificar um objeto com segurança, e não apenas detectá-lo, ele deve medir de 3 a 5 vezes o GSD. O voo depende de autorização e acresce prazo ao atendimento da demanda.',[['instalacao.jpg','Instalação em imagem de SARP, com detalhe centimétrico.'],['drone2.jpg','Drone Cat 0 em missão aérea para obtenção de imagens.']]],
+ sarp:['Detalhe centimétrico exige voo sobre o local','O satélite comercial de maior resolução chega à ordem de 30 cm. Abaixo disso a imagem vem de SARP (drone) ou de aeronave, e a resolução deixa de ser fixa: passa a ser o GSD, que depende da altura de voo, da lente e do sensor, e costuma ficar entre 1 cm e 5 cm. Para identificar um objeto com segurança, e não apenas detectá-lo, ele deve medir de 3 a 5 vezes o GSD. O voo depende de autorização e acresce prazo ao atendimento.',[['instalacao.jpg','Instalação em imagem de SARP, com detalhe centimétrico.']]],
  bdgex:['Consultar primeiro o BDGEx','O Banco de Dados Geográficos do Exército reúne cartas e geoinformação já produzidas. O que nele estiver disponível dispensa nova demanda.'],
  formatos:['O formato decorre do emprego','GeoPDF permite ligar e desligar camadas. KMZ é visualizado sobre o globo no Google Earth. GeoTIFF atende a quem opera sistema de informações geográficas.']
 };
@@ -381,6 +382,7 @@ const cod=s=>{let x=2166136261;for(let i=0;i<s.length;i++){x^=s.charCodeAt(i);x=
 function gerar(){const r=JSON.parse(JSON.stringify(S.req));delete r._cod;r._em=new Date().toISOString().slice(0,16).replace('T',' ')+' UTC';r._cod=cod(JSON.stringify(r));S.gen={json:JSON.stringify(r,null,1),cod:r._cod,em:r._em};}
 const PERFIL=(document.documentElement&&document.documentElement.dataset.perfil)||'analista';
 const IMGP=location.pathname.indexOf('/analista/')>=0?'../img/':'img/'; // pasta das imagens conforme a versão
+const OUTRA=(document.documentElement&&document.documentElement.dataset.par)?(PERFIL==='analista'?'../':'analista/'):null; // endereço da outra versão, quando publicadas juntas
 const S={req:blank(),step:0,an:null,gen:null,av:{},te:{}};
 const SN={sim:'Sim',parte:'Em parte',nao:'Não'},SN2={sim:'Sim',nao:'Não'};
 let DL=null;
@@ -412,7 +414,7 @@ function deduce(r){
  }
  if(ramo==='F'){
   if(r.F.origem==='nao')al.push(['warn','Sem origem conhecida, a análise terá limitações, que deverão constar do produto.']);
-  if(r.F.saber.includes('pessoas'))al.push(['warn','A descrição de pessoas depende da resolução do material recebido: imagem orbital não alcança esse nível de detalhe. Pela regra prática da fotogrametria, o alvo deve medir de 3 a 5 vezes o GSD para ser identificado. Avaliar a necessidade de obtenção por voo de SARP (drone) sobre o local.']);
+  if(r.F.saber.includes('pessoas'))al.push(['warn','A descrição de pessoas depende da resolução do material recebido: imagem orbital não alcança esse nível de detalhe. Pela regra prática da fotogrametria, o alvo deve medir de 3 a 5 vezes o GSD para ser identificado. Avaliar a necessidade de obtenção por SARP (drone) sobre o local.']);
   if(r.F.material.includes('rede'))al.push(['warn','Material de rede social costuma chegar sem metadados. Havendo o arquivo original, remetê-lo.']);
   if(!r.F.material.length)pe.push('Tipo de material');if(!r.F.origem)pe.push('Origem do material');if(!r.F.saber.length)pe.push('O que se necessita saber sobre o material');
  }
@@ -606,13 +608,13 @@ function vInicio(){
  <div class="hero"><div class="embw">${EMB.replace('class="emb"','class="emb big"')}</div><div class="stack"><h1>A demanda parte da Necessidade de Inteligência, não do tipo de produto</h1>
  <p class="lead">O solicitante responde ao questionário apresentado. O aplicativo converte as respostas em requisitos técnicos e fornece ao analista uma ficha de demanda que orienta o trabalho de produção.</p></div></div>
  <div class="modes">
-  <a class="mode" href="#solicitante"><h2>Solicitante</h2><span>Necessito de um produto e vou formalizar a demanda. Oito passos.</span></a>
-  ${PERFIL==='analista'?'<a class="mode" href="#analista"><h2>Analista</h2><span>Recebi uma demanda e vou carregar a ficha, o roteiro e o parecer de viabilidade.</span></a>':''}
+  ${PERFIL==='analista'?'<a class="mode" href="#analista"><h2>Analista</h2><span>Recebi uma demanda e vou carregar a ficha, o roteiro e o parecer de viabilidade.</span></a>':'<a class="mode" href="#solicitante"><h2>Solicitante</h2><span>Necessito de um produto e vou formalizar a demanda. Oito passos.</span></a>'}
   <a class="mode" href="#teste"><h2>Roteiro de Teste</h2><span>Casos fictícios e ficha de avaliação para a fase de testes.</span></a>
  </div>
  <div class="flow"><b>Demanda</b>→<b>Remessa por canal seguro</b>→<b>Ficha de demanda</b>→<b>Parecer de viabilidade</b>→<b>Produto</b></div>
  ${pill(k)}
- <p class="muted just">Versão 0.9, em fase de avaliação. Observações e sugestões podem ser registradas na Ficha de Avaliação, constante do Roteiro de Teste.</p>`;
+ ${OUTRA?`<p class="muted just">A demanda é criada na versão Solicitante e processada na versão Analista, em endereços distintos. <a href="${OUTRA}">Abrir a versão ${PERFIL==='analista'?'Solicitante':'Analista'}.</a></p>`:''}
+ <p class="muted just">Versão 0.9, em fase de avaliação. Observações e sugestões podem ser registradas na ficha do roteiro de teste.</p>`;
 }
 const EMB='<img class="emb" src="../img/emblema.png" alt="">';
 const sai=(t,id,nome,rot)=>t?`<textarea class="code" id="${id}" readonly aria-label="${rot}">${esc(t)}</textarea><div class="btns"><button data-act="copy" data-src="${id}">Copiar</button><button class="save" data-act="save" data-src="${id}" data-name="${nome}">Salvar</button></div>`:'';
@@ -630,23 +632,36 @@ function vAval(){
 const CASOS=[['Caso 1 - Análise de imagens','O S3 de um batalhão fictício planeja o reconhecimento de uma ponte sobre o Rio Exemplo. Necessita saber se a ponte e seus acessos permitem o trânsito de viaturas pesadas e se há indícios de utilização recente. O resultado deve chegar em 10 dias, para o planejamento.'],
  ['Caso 2 - Estudo do terreno','O comandante de uma companhia fictícia deslocará tropa motorizada da localidade Alfa para a localidade Bravo, na estação chuvosa. Necessita conhecer as restrições ao movimento e um itinerário alternativo. A decisão será tomada em 5 dias.'],
  ['Caso 3 - Distribuição espacial','A seção de Inteligência de uma brigada fictícia dispõe de planilha com cerca de 300 ocorrências do último semestre, registradas por localidade, sem coordenadas. Necessita saber onde se concentram, para orientar o patrulhamento. Haverá apresentação ao comandante em 3 semanas.']];
-const PERF={sol:'Solicitante (não especialista)',an:'Analista de Geointeligência'};
 function vTeste(){
- const t=S.te;
- return `<div class="stack"><h1>Roteiro de teste</h1><p class="lead">Os casos são fictícios. O objetivo é verificar se a demanda é formulada sem ajuda e se a ficha de demanda permite iniciar o trabalho.</p></div>
- <section class="card"><h2>Como proceder</h2><ol class="stack" style="margin:0;padding-left:20px;gap:6px">
-  <li>Escolher um dos casos abaixo e informar o código do avaliador no primeiro passo da demanda.</li><li>Preencher a demanda no módulo Solicitante, sem consultar terceiros, e gerar o arquivo.</li>
-  <li>Na versão Analista: carregar o arquivo, percorrer a ficha de demanda e emitir o parecer de viabilidade.</li><li>Responder à ficha de avaliação ao final desta página e remetê-la ao responsável pelo teste.</li></ol></section>
- <section class="card"><h2>Casos</h2>${CASOS.map(([a,b])=>`<div class="stack" style="gap:4px"><h3>${a}</h3><p class="just">${b}</p></div>`).join('')}</section>
- <section class="card"><h2>Ficha de Avaliação</h2>
-  <div class="row">${tx('te.aval','Código do avaliador','','Ex.: T-01')}${sel('te.caso','Caso percorrido',[['','Selecionar'],...CASOS.map(c=>[c[0],c[0]])],0)}</div>
-  ${rd('te.perfil','Em que condição o Sr avaliou?',ent(PERF),'opts2')}
-  ${rd('te.q1','As perguntas foram compreendidas sem ajuda?',ent(SN),'opts2')}
-  ${rd('te.q2','O tempo de preenchimento foi adequado?',ent(SN2),'opts2')}${tx('te.min','Tempo gasto, em minutos:')}
+ const t=S.te,an=PERFIL==='analista';
+ const passos=an?['Receber o arquivo da demanda, gerado na versão Solicitante.',
+   'Abrir a aba Analista e carregar o arquivo, colando o conteúdo ou abrindo o arquivo salvo.',
+   'Percorrer as três camadas da ficha de demanda e o roteiro do produto.',
+   'Emitir o parecer de viabilidade e gerar o texto.',
+   'Responder à ficha de avaliação, ao final desta página, e remetê-la ao responsável pelo teste.']
+  :['Escolher um dos casos abaixo e informar o código do avaliador no primeiro passo da demanda.',
+   'Preencher a demanda na aba Solicitante, sem consultar terceiros.',
+   'Gerar o arquivo da demanda e salvá-lo.',
+   'Remeter o arquivo a quem fará o papel de analista, que o carregará na versão Analista.',
+   'Responder à ficha de avaliação, ao final desta página, e remetê-la ao responsável pelo teste.'];
+ const perg=an?`${rd('te.a1','A demanda chegou íntegra e legível?',ent(SN),'opts2')}
+  ${rd('te.a2','A ficha de demanda trouxe o necessário para iniciar o trabalho?',ent(SN),'opts2')}
+  ${rd('te.a3','A tradução técnica e a prioridade sugerida fazem sentido?',ent(SN),'opts2')}
+  ${rd('te.a4','O roteiro é adequado ao produto?',ent(SN),'opts2')}
+  ${rd('te.a5','O parecer de viabilidade cobre o que a seção precisa responder?',ent(SN),'opts2')}`
+  :`${rd('te.q1','As perguntas foram compreendidas sem ajuda?',ent(SN),'opts2')}
   ${rd('te.q3','O resumo e os alertas corresponderam ao que se pretendia pedir?',ent(SN),'opts2')}
-  ${t.perfil==='an'?rd('te.q4','A ficha de demanda trouxe o necessário para iniciar o trabalho?',ent(SN),'opts2'):''}
+  ${rd('te.q4','O arquivo da demanda foi gerado e salvo sem dificuldade?',ent(SN2),'opts2')}`;
+ return `<div class="stack"><h1>Roteiro de Teste</h1><p class="lead">Os casos são fictícios. ${an?'O objetivo é verificar se a ficha de demanda permite iniciar o trabalho sem recorrer ao solicitante.':'O objetivo é verificar se a demanda é formulada sem ajuda e sem o vocabulário da especialidade.'}</p></div>
+ <section class="card"><h2>Como proceder</h2><ol class="stack" style="margin:0;padding-left:20px;gap:6px">${passos.map(x=>`<li class="just">${x}</li>`).join('')}</ol>
+ ${OUTRA?`<p class="hint">A outra versão fica em <a href="${OUTRA}">endereço próprio</a>.</p>`:''}</section>
+ <section class="card"><h2>Casos</h2>${CASOS.map(([a,b])=>`<div class="stack" style="gap:4px"><h3>${a}</h3><p class="just">${b}</p></div>`).join('')}</section>
+ <section class="card"><h2>Ficha de Avaliação do Aplicativo</h2><p class="hint just">Avalia o módulo ${an?'Analista':'Solicitante'}, desta versão.</p>
+  <div class="row">${tx('te.aval','Código do avaliador','','Ex.: T-01')}${sel('te.caso','Caso percorrido',[['','Selecionar'],...CASOS.map(c=>[c[0],c[0]])],0)}</div>
+  ${perg}
+  ${rd('te.q2','O tempo empregado foi adequado?',ent(SN2),'opts2')}${tx('te.min','Tempo gasto, em minutos:')}
   ${ta('te.q5','O que alterar, retirar ou acrescentar?')}
-  <div class="btns"><button class="pri" data-act="te-gerar">Gerar ficha</button></div>${sai(t.texto,'out-te','ficha-teste-geoint.txt','Texto da ficha')}<span class="hint" id="msg" role="status"></span></section>`;
+  <div class="btns"><button class="pri" data-act="te-gerar">Gerar ficha</button></div>${sai(t.texto,'out-te','ficha-avaliacao-'+(an?'analista':'solicitante')+'.txt','Texto da ficha')}<span class="hint" id="msg" role="status"></span></section>`;
 }
 const STEPS=['Solicitante','Necessidade','Prazo','Área de interesse','Tipo de necessidade','Detalhamento','Entrega','Resumo'];
 function vSolic(){
@@ -696,7 +711,7 @@ function vSolic(){
   <div class="stack"><h3>Arquivo da demanda</h3>${S.gen?`<div class="alert ok">Arquivo gerado em ${S.gen.em}. Código de conferência: <strong>${S.gen.cod}</strong>.</div>
    <p class="hint">Salvar o arquivo e remeter por canal seguro. <strong>Citar o código de conferência no documento de remessa</strong>: é a assinatura desse documento que vincula a demanda ao solicitante. O analista carrega o arquivo no módulo Analista, que confere o código.</p>
    <div class="btns"><button class="pri save" data-act="save" data-src="out-json" data-name="demanda-geoint.json">Salvar arquivo</button><button data-act="copy" data-src="out-json">Copiar conteúdo</button>
-   <button data-act="exp">Exportar resumo</button>${PERFIL==='analista'?'<button data-act="to-an">Carregar no módulo Analista</button>':''}</div>
+   <button data-act="exp">Exportar resumo</button></div>
    <details><summary>Ver conteúdo do arquivo</summary><textarea class="code" id="out-json" readonly aria-label="Conteúdo do arquivo da demanda">${esc(S.gen.json)}</textarea></details>`
    :`<p class="hint">O arquivo reúne as respostas e recebe um código de conferência. ${d.pe.length?'Há pendências: o arquivo pode ser gerado assim mesmo, e o analista as receberá para sanar.':''}</p>
    <div class="btns"><button class="pri" data-act="gerar">Gerar arquivo</button></div>`}<span class="hint" id="msg" role="status"></span></div>`;
@@ -769,7 +784,8 @@ function vBib(){
 
 /* ---------- render e eventos ---------- */
 const app=document.getElementById('app');
-const route=()=>['inicio','solicitante','avaliacao','teste','biblioteca'].concat(PERFIL==='analista'?['analista']:[]).includes(location.hash.slice(1))?location.hash.slice(1):'inicio';
+const ROTAS=PERFIL==='analista'?['inicio','analista','teste','biblioteca']:['inicio','solicitante','avaliacao','teste','biblioteca'];
+const route=()=>ROTAS.includes(location.hash.slice(1))?location.hash.slice(1):'inicio';
 function render(keep){
  const r=route(),act=keep&&document.activeElement?document.activeElement.id:null;
  app.innerHTML={inicio:vInicio,solicitante:vSolic,analista:vAnalista,biblioteca:vBib,avaliacao:vAval,teste:vTeste}[r]();
@@ -807,12 +823,20 @@ app.addEventListener('click',e=>{
  if(a==='clear'){S.req=blank();S.gen=null;S.step=0;render();}
  if(a==='gerar'){gerar();render();}
  if(a==='av-gerar'){const v=S.av;v.texto='AVALIAÇÃO PÓS-ENTREGA\n\nCódigo de conferência da demanda: '+(v.cod||NI)+'\nProduto recebido: '+(v.prod||NI)+'\nRespondeu à pergunta formulada: '+(SN[v.resp]||NI)+'\nChegou a tempo de apoiar a decisão: '+(SN2[v.tempo]||NI)+'\nFormato atendeu ao emprego previsto: '+(SN2[v.formato]||NI)+'\nCompreendido sem esclarecimento: '+(SN2[v.clareza]||NI)+'\n\nA aperfeiçoar:\n'+(v.faltou||NI);render();}
- if(a==='te-gerar'){const v=S.te;v.texto='FICHA DE AVALIAÇÃO DO TESTE - versão 0.9\n\nCódigo do avaliador: '+(v.aval||NI)+'\nCaso: '+(v.caso||NI)+'\nCondição: '+(PERF[v.perfil]||NI)+'\n\n1. Perguntas compreendidas sem ajuda: '+(SN[v.q1]||NI)+'\n2. Tempo de preenchimento adequado: '+(SN2[v.q2]||NI)+' ('+(v.min||'?')+' min)\n3. Resumo e alertas corresponderam ao pretendido: '+(SN[v.q3]||NI)+(v.perfil==='an'?'\n4. Ficha de demanda suficiente para iniciar: '+(SN[v.q4]||NI):'')+'\n\nA alterar, retirar ou acrescentar:\n'+(v.q5||NI);render();}
+ if(a==='te-gerar'){const v=S.te,an=PERFIL==='analista';
+  v.texto='FICHA DE AVALIAÇÃO DO APLICATIVO - versão 0.9\nMódulo avaliado: '+(an?'Analista':'Solicitante')
+   +'\n\nCódigo do avaliador: '+(v.aval||NI)+'\nCaso: '+(v.caso||NI)+'\n\n'
+   +(an?['Demanda chegou íntegra e legível: '+(SN[v.a1]||NI),'Ficha suficiente para iniciar o trabalho: '+(SN[v.a2]||NI),
+         'Tradução técnica e prioridade coerentes: '+(SN[v.a3]||NI),'Roteiro adequado ao produto: '+(SN[v.a4]||NI),
+         'Parecer cobre o que a seção precisa responder: '+(SN[v.a5]||NI)]
+       :['Perguntas compreendidas sem ajuda: '+(SN[v.q1]||NI),'Resumo e alertas corresponderam ao pretendido: '+(SN[v.q3]||NI),
+         'Arquivo gerado e salvo sem dificuldade: '+(SN2[v.q4]||NI)]).join('\n')
+   +'\nTempo empregado adequado: '+(SN2[v.q2]||NI)+' ('+(v.min||'?')+' min)'
+   +'\n\nA alterar, retirar ou acrescentar:\n'+(v.q5||NI);render();}
  if(a==='skin'){skin=b.dataset.k;const R=document.documentElement;if(skin)R.dataset.skin=skin;else delete R.dataset.skin;try{localStorage.setItem('geoint-skin',skin);}catch(x){}drawBg();render();}
  if(a==='exp'){const t=textoPedido(S.req,deduce(S.req))+'\n\nCódigo de conferência: '+S.gen.cod+'\nCitar este código no documento de remessa da demanda.';if(DL)Promise.resolve().then(()=>DL.save({filename:'resumo-demanda-geoint.txt',data:t})).then(()=>say('Resumo salvo.'),()=>copy(t,'out-json'));else copy(t,'out-json');}
  if(a==='copy'){copy(document.getElementById(b.dataset.src).value,b.dataset.src);}
  if(a==='save'&&DL){const v=document.getElementById(b.dataset.src).value,mid=b.dataset.src==='out-par'?'msg2':'msg';Promise.resolve().then(()=>DL.save({filename:b.dataset.name,data:v})).then(()=>say('Arquivo salvo.',mid),()=>say('O arquivo não foi salvo. Empregar o botão de copiar.',mid));}
- if(a==='to-an'){loadReq(S.gen.json);location.hash='#analista';window.scrollTo(0,0);}
  if(a==='load'){loadReq(document.getElementById('in-json').value);}
  if(a==='load-ex'){S.an=blankAn(exemplo());render();window.scrollTo(0,0);}
  if(a==='unload'){S.an=null;render();window.scrollTo(0,0);}
