@@ -117,7 +117,7 @@ legend{font-weight:500;font-size:.93rem;padding:0;margin-bottom:6px}
 .opt span{display:flex;flex-direction:column}
 .opt small{color:var(--muted);font-size:.83rem}
 .opt img,.opt canvas.thumb{width:112px;height:84px;object-fit:cover;border:1px solid var(--ink);border-radius:2px;flex:none;background:var(--sunken)}
-.pill>span,.just{text-align:justify;hyphens:none;-webkit-hyphens:none}
+.pill>span,.pill>strong,.just,legend,label.f,.opt span{text-align:justify;hyphens:none;-webkit-hyphens:none}
 .hero,main>.card:not(.layer){position:relative;border-radius:0}
 .hero{border:1px solid var(--line);padding:26px 24px}
 .hero .lead{max-width:65ch;text-align-last:center}
@@ -184,6 +184,7 @@ ol.rot .opt span b::before{content:counter(r) ". ";font-family:var(--mono);color
 .lib{display:flex;flex-direction:column;gap:4px;padding:12px 0;border-top:1px solid var(--line)}
 .lib:first-of-type{border-top:0}
 .lib code{font:500 .8rem var(--mono);color:var(--muted)}
+.lib strong,.lib span{text-align:justify;hyphens:none;-webkit-hyphens:none}
 .muted{color:var(--muted);font-size:.9rem}
 @media (max-width:480px){h1{font-size:1.5rem}#carta{height:160px}.sc{grid-template-columns:1fr 1fr}.sc>span{grid-column:1/-1;font-weight:500}dl.kv{grid-template-columns:1fr}dl.kv dt{margin-top:6px}}
 @media (prefers-reduced-motion:no-preference){.opt,.mode,button{transition:border-color .15s,background-color .15s}}
@@ -202,7 +203,7 @@ ol.rot .opt span b::before{content:counter(r) ". ";font-family:var(--mono);color
 <header class="top"><div class="top-in">
   <div class="brand"><img class="emb" src="img/emblema.png" alt="">Demanda de Geointeligência<span class="ver">TESTES 0.9</span></div>
   <nav aria-label="Seções">
-    <a href="#inicio">Início</a><a href="#solicitante">Solicitante</a><a href="#avaliacao">Avaliação do produto</a><a href="#analista">Analista</a><a href="#biblioteca">Biblioteca</a>
+    <a href="#inicio">Início</a><a href="#solicitante">Solicitante</a><a href="#avaliacao">Avaliação do Produto</a><a href="#analista">Analista</a><a href="#biblioteca">Biblioteca</a>
   </nav>
 </div></header>
 <div class="notice"><div>Protótipo de trabalho individual. Não constitui sistema oficial. Nada do que for digitado é transmitido ou armazenado: a demanda existe apenas nesta tela e no arquivo gerado. Empregar somente dados ostensivos.</div></div>
@@ -508,25 +509,34 @@ const ck=(p,l,dic)=>`<fieldset><legend>${l} <span class="hint">Assinalar quantos
 const ent=(dic,f=x=>x)=>Object.entries(dic).map(([k,v])=>[k,...[].concat(f(v))]);
 
 /* ---------- ilustrações sintéticas ---------- */
-const rnd=(x,y)=>{const s=Math.sin(x*127.1+y*311.7)*43758.5453;return s-Math.floor(s);};
+const rnd=(x,y)=>{let n=(x*374761393+y*668265263)|0;n=Math.imul(n^(n>>>13),1274126177);return ((n^(n>>>16))>>>0)/4294967296;};
 const sm=t=>t*t*(3-2*t);
 const n2=(x,y)=>{const xi=Math.floor(x),yi=Math.floor(y),xf=sm(x-xi),yf=sm(y-yi),a=rnd(xi,yi),b=rnd(xi+1,yi),d=rnd(xi,yi+1),e=rnd(xi+1,yi+1);return a+(b-a)*xf+(d-a)*yf+(a-b-d+e)*xf*yf;};
-const ST=[[.34,[154,192,140]],[.44,[196,210,154]],[.54,[226,212,156]],[.64,[206,164,110]],[.76,[160,112,78]],[.95,[238,232,222]]];
+const ST=[[0,[152,185,134]],[.20,[192,207,148]],[.40,[226,214,158]],[.60,[208,170,114]],[.80,[174,122,82]],[1,[142,94,64]]];
 const ramp=v=>{if(v<=ST[0][0])return ST[0][1];for(let i=1;i<ST.length;i++)if(v<=ST[i][0]){const t=(v-ST[i-1][0])/(ST[i][0]-ST[i-1][0]),A=ST[i-1][1],B=ST[i][1];return [A[0]+(B[0]-A[0])*t,A[1]+(B[1]-A[1])*t,A[2]+(B[2]-A[2])*t];}return ST[ST.length-1][1];};
 /* modo: hipso (carta), shade (relevo sombreado), veg (cor natural), pan (pancromática) */
 function paint(g,W,H,modo,span,ox,oy){
- const im=g.createImageData(W,H),px=im.data,h=new Float32Array(W*H),k=span/W,CI=.03;
- for(let y=0;y<H;y++)for(let x=0;x<W;x++){let v=0,a=.5,f=1;for(let i=0;i<5;i++){v+=a*n2((x*k+ox)*f,(y*k+oy)*f);a*=.5;f*=2;}h[y*W+x]=v;}
+ const im=g.createImageData(W,H),px=im.data,h=new Float32Array(W*H),k=span/W,CI=.05,NV=.2,N=W*H;
+ /* campo de elevação; a deformação do domínio alonga cristas e vales */
+ let sm1=0,sm2=0;
+ for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+  const X=x*k+ox,Y=y*k+oy,wx=X+.35*n2(X*1.7+11.3,Y*1.7+4.1),wy=Y+.35*n2(wx*1.7+3.7,Y*1.7+9.2);
+  let v=0,a=.5,f=1;for(let i=0;i<5;i++){v+=a*n2(wx*f,wy*f);a*=.5;f*=2;}h[y*W+x]=v;sm1+=v;sm2+=v*v;}
+ /* normalização pela média e pelo desvio: a faixa hipsométrica fica estável entre cenas */
+ const mu=sm1/N,sd=Math.sqrt(Math.max(sm2/N-mu*mu,1e-9)),b0=mu-2.1*sd,amp=4.2*sd;
+ for(let i=0;i<N;i++)h[i]=(h[i]-b0)/amp;
  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
   const i=y*W+x,v=h[i],xr=h[y*W+Math.min(W-1,x+1)],yd=h[Math.min(H-1,y+1)*W+x],xl=h[y*W+Math.max(0,x-1)],yu=h[Math.max(0,y-1)*W+x];
-  const s=Math.max(.62,Math.min(1.22,1+((xl-xr)+(yu-yd))*W*.055));let col;
+  /* sombreamento com luz a noroeste, 45 graus de altura (convenção cartográfica) */
+  const gx=(xr-xl)*.5*W*.09,gy=(yd-yu)*.5*W*.09,lam=(gx*.5+gy*.5+.7071)/Math.sqrt(gx*gx+gy*gy+1);
+  const s=Math.max(.55,Math.min(1.3,.396+lam*.854));let col;
   if(modo==='shade'){const c=205*s;col=[c,c,c*.98];}
   else if(modo==='veg'){const t=n2(x*.35+ox,y*.35+oy)*.25;col=[(58+v*60+t*40)*s,(96+v*50+t*30)*s,(52+v*30)*s];}
   else if(modo==='pan'){const c=(70+v*110+n2(x*.5,y*.5)*40)*s;col=[c,c,c];}
-  else{const agua=v<.33;
-   if(agua)col=[150,190,216];
-   else{col=ramp(v);col=[col[0]*s,col[1]*s,col[2]*s];const q=Math.floor(v/CI);if(q!==Math.floor(xr/CI)||q!==Math.floor(yd/CI)){const m=Math.max(q,Math.floor(xr/CI),Math.floor(yd/CI))%5===0?.75:.38;col=[col[0]+(96-col[0])*m,col[1]+(60-col[1])*m,col[2]+(30-col[2])*m];}}
-   if(agua!==(xr<.33)||agua!==(yd<.33))col=[40,104,150];}
+  else{const agua=v<NV;
+   if(agua){const p=Math.min(1,(NV-v)/(NV*.5));col=[160-90*p,198-62*p,220-44*p];}
+   else{col=ramp((v-NV)/(1-NV));col=[col[0]*s,col[1]*s,col[2]*s];const q=Math.floor(v/CI);if(q!==Math.floor(xr/CI)||q!==Math.floor(yd/CI)){const m=Math.max(q,Math.floor(xr/CI),Math.floor(yd/CI))%5===0?.68:.32;col=[col[0]+(118-col[0])*m,col[1]+(76-col[1])*m,col[2]+(44-col[2])*m];}}
+   if(agua!==(xr<NV)||agua!==(yd<NV))col=[32,90,134];}
   px[i*4]=col[0];px[i*4+1]=col[1];px[i*4+2]=col[2];px[i*4+3]=255;
  }
  g.putImageData(im,0,0);
@@ -534,7 +544,7 @@ function paint(g,W,H,modo,span,ox,oy){
 function drawCarta(){
  const c=document.getElementById('carta');if(!c||!c.getContext)return;
  const dpr=Math.min(window.devicePixelRatio||1,2),W=Math.max(320,Math.round(c.clientWidth*dpr)),H=Math.round(c.clientHeight*dpr);
- c.width=W;c.height=H;const g=c.getContext('2d');paint(g,W,H,'hipso',5.2,3.2,1.7);
+ c.width=W;c.height=H;const g=c.getContext('2d');paint(g,W,H,'hipso',5.2,11.2,2.6);
  const u=dpr,cell=W/6;g.strokeStyle='rgba(20,23,15,.38)';g.lineWidth=u;g.font=`500 ${10*u}px IBM Plex Mono, monospace`;g.fillStyle='rgba(20,23,15,.85)';
  for(let i=1;i<6;i++){const X=Math.round(i*cell)+.5;g.beginPath();g.moveTo(X,0);g.lineTo(X,H);g.stroke();g.fillText(String(52+i).padStart(2,'0'),X+3*u,11*u);}
  for(let j=1;j*cell<H;j++){const Y=Math.round(j*cell)+.5;g.beginPath();g.moveTo(0,Y);g.lineTo(W,Y);g.stroke();g.fillText(String(78-j).padStart(2,'0'),3*u,Y-3*u);}
@@ -606,20 +616,20 @@ function vInicio(){
  return `<figure><canvas id="carta" role="img" aria-label="Carta ilustrativa com hipsometria, curvas de nível, hidrografia e quadriculado"></canvas>
  <figcaption>Ilustração: relevo sintético com hipsometria, sombreamento, curvas de nível, hidrografia e quadriculado. Não representa área real.</figcaption></figure>
  <div class="hero"><div class="embw">${EMB.replace('class="emb"','class="emb big"')}</div><div class="stack"><h1>A demanda parte da Necessidade de Inteligência, não do tipo de produto</h1>
- <p class="lead">O solicitante responde ao questionário apresentado. O aplicativo converte as respostas em requisitos técnicos e fornece ao analista uma ficha de demanda que orienta o trabalho de produção.</p></div></div>
+ <p class="lead">O solicitante responde ao questionário apresentado. O aplicativo converte as respostas em requisitos técnicos e fornece ao analista uma Ficha de Demanda que orienta o trabalho de produção.</p></div></div>
  <div class="modes">
   ${PERFIL==='analista'?'<a class="mode" href="#analista"><h2>Analista</h2><span>Recebi uma demanda e vou carregar a ficha, o roteiro e o parecer de viabilidade.</span></a>':'<a class="mode" href="#solicitante"><h2>Solicitante</h2><span>Necessito de um produto e vou formalizar a demanda. Oito passos.</span></a>'}
   <a class="mode" href="#teste"><h2>Roteiro de Teste</h2><span>Casos fictícios e ficha de avaliação para a fase de testes.</span></a>
  </div>
- <div class="flow"><b>Demanda</b>→<b>Remessa por canal seguro</b>→<b>Ficha de demanda</b>→<b>Parecer de viabilidade</b>→<b>Produto</b></div>
+ <div class="flow"><b>Demanda</b>→<b>Remessa por canal seguro</b>→<b>Ficha de Demanda</b>→<b>Parecer de viabilidade</b>→<b>Produto</b></div>
  ${pill(k)}
  ${OUTRA?`<p class="muted just">A demanda é criada na versão Solicitante e processada na versão Analista, em endereços distintos. <a href="${OUTRA}">Abrir a versão ${PERFIL==='analista'?'Solicitante':'Analista'}.</a></p>`:''}
- <p class="muted just">Versão 0.9, em fase de avaliação. Observações e sugestões podem ser registradas na ficha do roteiro de teste.</p>`;
+ <p class="muted just">Desenvolvido pelo Maj Cav <strong>THADEU</strong> ALMEIDA DE SANTANA, do Comando de Operações Terrestres. Versão 0.9, em fase de avaliação. Observações e sugestões podem ser registradas na ficha do roteiro de teste.</p>`;
 }
 const EMB='<img class="emb" src="img/emblema.png" alt="">';
 const sai=(t,id,nome,rot)=>t?`<textarea class="code" id="${id}" readonly aria-label="${rot}">${esc(t)}</textarea><div class="btns"><button data-act="copy" data-src="${id}">Copiar</button><button class="save" data-act="save" data-src="${id}" data-name="${nome}">Salvar</button></div>`:'';
 function vAval(){
- return `<div class="stack"><h1>Avaliação do produto recebido</h1><p class="lead">Preenchida pelo solicitante após a entrega. Retorna à seção por canal seguro e orienta o aperfeiçoamento dos produtos.</p></div>
+ return `<div class="stack"><h1>Avaliação do Produto recebido</h1><p class="lead">Preenchida pelo solicitante após o recebimento do produto - <i>feedback</i>. Retorna à seção por canal seguro e orienta o aperfeiçoamento dos produtos.</p></div>
  <section class="card"><h2>Avaliação pós-entrega</h2>
   <div class="row">${tx('av.cod','Código de conferência da demanda','Consta do resumo exportado.')}${tx('av.prod','Produto recebido','','Ex.: análise de imagens da ponte.')}</div>
   ${rd('av.resp','O produto respondeu à pergunta formulada?',ent(SN),'opts2')}
@@ -636,7 +646,7 @@ function vTeste(){
  const t=S.te,an=PERFIL==='analista';
  const passos=an?['Receber o arquivo da demanda, gerado na versão Solicitante.',
    'Abrir a aba Analista e carregar o arquivo, colando o conteúdo ou abrindo o arquivo salvo.',
-   'Percorrer as três camadas da ficha de demanda e o roteiro do produto.',
+   'Percorrer as três camadas da Ficha de Demanda e o roteiro do produto.',
    'Emitir o parecer de viabilidade e gerar o texto.',
    'Responder à ficha de avaliação, ao final desta página, e remetê-la ao responsável pelo teste.']
   :['Escolher um dos casos abaixo e informar o código do avaliador no primeiro passo da demanda.',
@@ -645,14 +655,14 @@ function vTeste(){
    'Remeter o arquivo a quem fará o papel de analista, que o carregará na versão Analista.',
    'Responder à ficha de avaliação, ao final desta página, e remetê-la ao responsável pelo teste.'];
  const perg=an?`${rd('te.a1','A demanda chegou íntegra e legível?',ent(SN),'opts2')}
-  ${rd('te.a2','A ficha de demanda trouxe o necessário para iniciar o trabalho?',ent(SN),'opts2')}
+  ${rd('te.a2','A Ficha de Demanda trouxe o necessário para iniciar o trabalho?',ent(SN),'opts2')}
   ${rd('te.a3','A tradução técnica e a prioridade sugerida fazem sentido?',ent(SN),'opts2')}
   ${rd('te.a4','O roteiro é adequado ao produto?',ent(SN),'opts2')}
   ${rd('te.a5','O parecer de viabilidade cobre o que a seção precisa responder?',ent(SN),'opts2')}`
   :`${rd('te.q1','As perguntas foram compreendidas sem ajuda?',ent(SN),'opts2')}
   ${rd('te.q3','O resumo e os alertas corresponderam ao que se pretendia pedir?',ent(SN),'opts2')}
   ${rd('te.q4','O arquivo da demanda foi gerado e salvo sem dificuldade?',ent(SN2),'opts2')}`;
- return `<div class="stack"><h1>Roteiro de Teste</h1><p class="lead">Os casos são fictícios. ${an?'O objetivo é verificar se a ficha de demanda permite iniciar o trabalho sem recorrer ao solicitante.':'O objetivo é verificar se a demanda é formulada sem ajuda e sem o vocabulário da especialidade.'}</p></div>
+ return `<div class="stack"><h1>Roteiro de Teste</h1><p class="lead">Os casos são fictícios. ${an?'O objetivo é verificar se a Ficha de Demanda permite iniciar o trabalho sem recorrer ao solicitante.':'O objetivo é verificar se a demanda é formulada sem ajuda e sem o vocabulário da especialidade.'}</p></div>
  <section class="card"><h2>Como proceder</h2><ol class="stack" style="margin:0;padding-left:20px;gap:6px">${passos.map(x=>`<li class="just">${x}</li>`).join('')}</ol>
  ${OUTRA?`<p class="hint">A outra versão fica em <a href="${OUTRA}">endereço próprio</a>.</p>`:''}</section>
  <section class="card"><h2>Casos</h2>${CASOS.map(([a,b])=>`<div class="stack" style="gap:4px"><h3>${a}</h3><p class="just">${b}</p></div>`).join('')}</section>
@@ -728,10 +738,10 @@ function vAnalista(){
   <textarea class="code" id="in-json" style="min-height:110px" placeholder="Colar aqui o conteúdo do arquivo da demanda" aria-label="Conteúdo do arquivo da demanda"></textarea>
   <div class="btns"><button class="pri" data-act="load">Carregar o conteúdo colado</button><label class="f" style="flex-direction:row;align-items:center;gap:8px" for="in-file">ou abrir o arquivo <input type="file" id="in-file" accept=".json,.txt,application/json"></label>
   <button data-act="load-ex" style="margin-left:auto">Carregar exemplo fictício</button></div><span class="hint" id="msg" role="status"></span></section>`;
- if(!a)return `<div class="stack"><h1>Ficha de demanda</h1><p class="lead">Carregar o arquivo da demanda recebida por canal seguro. A ficha é montada em seguida.</p></div>${carga}`;
+ if(!a)return `<div class="stack"><h1>Ficha de Demanda</h1><p class="lead">Carregar o arquivo da demanda recebida por canal seguro. A ficha é montada em seguida.</p></div>${carga}`;
  const r=a.req,d=deduce(r),rot=ROT[d.ramo],pes=d.ramo==='F'&&r.F.saber.includes('pessoas');
  const done=rot?rot.filter((_,i)=>a.rot[i]).length:0;
- return `<div class="stack"><h1>Ficha de demanda</h1>${r.exemplo?'<p class="lead">Demanda carregada: <strong>exemplo fictício</strong>.</p>':''}${a.integ==='ok'?`<div class="alert ok">Arquivo conferido. Código ${esc(r._cod)}, gerado em ${esc(r._em)}.</div>`:a.integ==='alterado'?'<div class="alert crit">O conteúdo não confere com o código de conferência: o arquivo foi alterado após a geração. Confirmar com o solicitante.</div>':a.integ==='semcod'?'<div class="alert">Arquivo sem código de conferência. Não é possível verificar se foi alterado.</div>':''}
+ return `<div class="stack"><h1>Ficha de Demanda</h1>${r.exemplo?'<p class="lead">Demanda carregada: <strong>exemplo fictício</strong>.</p>':''}${a.integ==='ok'?`<div class="alert ok">Arquivo conferido. Código ${esc(r._cod)}, gerado em ${esc(r._em)}.</div>`:a.integ==='alterado'?'<div class="alert crit">O conteúdo não confere com o código de conferência: o arquivo foi alterado após a geração. Confirmar com o solicitante.</div>':a.integ==='semcod'?'<div class="alert">Arquivo sem código de conferência. Não é possível verificar se foi alterado.</div>':''}
   <div class="btns"><button data-act="unload">Carregar outra demanda</button></div></div>
  <section class="card layer"><h2><small>CAMADA 1</small>A demanda como foi formulada</h2>${kv(linhasPedido(r))}</section>
  <section class="card layer l2"><h2><small>CAMADA 2</small>Tradução técnica</h2>${d.prio?`<span class="prio"><i>${d.prio}</i>${PRIO_TXT[d.prio]}</span>`:''}${kv(linhasTec(d))}
@@ -763,20 +773,20 @@ function vAnalista(){
   <div class="btns"><button data-act="cfg">Aplicar prazos</button></div></section>`;
 }
 function vBib(){
- const man=[['Manual de Campanha Geoinformação','EB20-MC-10.209, 1ª edição, 2014','Conceitos de Geoinformação e seu emprego na Força Terrestre.','https://bdex.eb.mil.br/jspui/bitstream/123456789/11917/1/EB20MC10209.pdf'],
-  ['Manual de Campanha Processo de Integração Terreno, Condições Meteorológicas, Inimigo e Considerações Civis (PITCIC)','EB70-MC-10.336, 1ª edição, 2023','Aprovado pela Portaria COTER/C Ex nº 275, de 26 de maio de 2023. Disponível no Portal da Doutrina do Exército.',''],
-  ['Manual Técnico Geointeligência','EB70-MT-70.402, 1ª edição, 2019','Em vigor. Será substituído pelo Manual de Campanha de Geointeligência.',''],
-  ['Manual de Campanha de Geointeligência','Em edição','Será incluído após a publicação.','']];
+ const man=[['Manual de Campanha Geoinformação','EB20-MC-10.209, 1ª edição, 2014','Aprovado pela Portaria EME n.º 006, de 09 de janeiro de 2014.<br>Conceitos de Geoinformação e seu emprego na Força Terrestre.','https://bdex.eb.mil.br/jspui/bitstream/123456789/11917/1/EB20MC10209.pdf'],
+  ['Manual Técnico Geointeligência','EB70-MT-70.402, 1ª edição, 2019','Aprovado pela Portaria COTER n.º 50, de 02 de maio de 2019.<br>Estabelece a doutrina oficial sobre o uso integrado de informações geográficas para fins de defesa e inteligência.','https://bdex.eb.mil.br/jspui/bitstream/123456789/3617/3/EB70MT70402-final.pdf'],
+  ['Manual de Campanha Processo de Integração Terreno, Condições Meteorológicas, Inimigo e Considerações Civis (PITCIC)','EB70-MC-10.336, 1ª edição, 2023','Aprovado pela Portaria COTER/C Ex n.º 275, de 26 de maio de 2023.<br>Orienta os estados-maiores dos diversos escalões da Força Terrestre na integração do terreno, clima, inimigo e fatores civis para subsidiar a montagem de linhas de ação no planejamento militar.','https://cdoutex.eb.mil.br/acervo-doutrina/arquivo/pdf/108'],
+  ['Manual de Campanha Geointeligência','Em elaboração','Será incluído após a publicação.','']];
  const ext=[['GEOINT Basic Doctrine, Publication 1.0','National System for Geospatial Intelligence (EUA), 2018','Doutrina básica de Geointeligência: definição, dados, processo e profissionais. Em inglês.','https://www.nga.mil/resources/GEOINT_Basic_Doctrine_Publication_10_.html'],
   ['Joint Publication 2-03, Geospatial Intelligence in Joint Operations','Joint Chiefs of Staff (EUA), 2017','Geointeligência nas operações conjuntas, com a relação de produtos e serviços padronizados. Em inglês.','https://irp.fas.org/doddir/dod/jp2_03.pdf']];
  const art=[['Do pixel ao contexto: integração doutrinária e analítica entre IMINT e GEOINT na produção de Inteligência','Revista Doutrina Militar Terrestre, v. 14, n. 45, 2026','Relação entre a Inteligência de Imagens e a Geointeligência na produção do conhecimento.','https://ebrevistas.eb.mil.br/DMT/article/view/14219/11392'],
-  ['Modelos deep learning e imagens radar SAR: um estudo sobre detecção e identificação de alvos militares na Amazônia','A Lucerna, Ano XII, nº 13, 2023, p. 61','Emprego de aprendizado profundo sobre imagens de radar de abertura sintética.',''],
+  ['Modelos <i>Deep Learning</i> e imagens radar SAR: um estudo sobre detecção e identificação de alvos militares na Amazônia','A Lucerna, Ano XII, nº 13, 2023, p. 61','Emprego de aprendizado profundo sobre imagens de radar de abertura sintética.',''],
   ['New GEOINT fusion analysis tool could play role in ABMS, JADC2 systems','Janes, 5 de novembro de 2020','Ferramenta de fusão de dados de múltiplas fontes para analistas de Geointeligência. Em inglês.','https://www.janes.com/defence-intelligence-insights/defence-news/new-geoint-fusion-analysis-tool-could-play-role-in-abms-jadc2-systems_13437'],
   ['Detecting the Invisible: Using Foundational Context to Reveal Force Protection and Battlespace Posture','Janes, estudo técnico','Análise técnica e geoespacial combinadas para interpretar indicadores, com exemplos do conflito Rússia-Ucrânia. Em inglês.','https://www.janes.com/defence-intelligence-insights/defence-and-national-security-analysis/detecting-the-invisible-using-foundational-context-to-reveal-force-protection-and-battlespace-posture']];
  const li=L=>L.map(([t,c,x,u])=>`<div class="lib"><strong>${t}</strong><code>${c}</code><span class="muted">${x}</span>${u?`<a href="${u}" target="_blank" rel="noopener">Acessar a publicação</a>`:''}</div>`).join('');
  return `<div class="stack"><h1>Biblioteca</h1><p class="lead">Conceitos e publicações afetas à Geointeligência. Os documentos não ficam no aplicativo.</p></div>
  <section class="card"><h2>Você sabia?</h2>${Object.keys(PILLS).map(pill).join('')}</section>
- <section class="card"><h2>Manuais</h2><div>${li(man)}</div><p class="hint">Confirmar a edição vigente antes de citar.</p></section>
+ <section class="card"><h2>Manuais</h2><div>${li(man)}</div><p class="hint">Previsão de publicação do MC em 2027.</p></section>
  <section class="card"><h2>Publicações estrangeiras</h2><div>${li(ext)}</div></section>
  <section class="card"><h2>Artigos</h2><div>${li(art)}</div></section>
  <section class="card"><h2>Créditos das imagens</h2><p class="muted just">Emblema, fundos de tela, carta com relevo, modelos tridimensionais do terreno e realces de água e de vegetação: produção do autor. Imagem de radar e realce de terreno exposto: contêm dados Copernicus Sentinel modificados; os topônimos sobre as imagens são do OpenStreetMap. Imagens de instalação, embarcação, aeronave destruída e sensor termal: obtidas em operação, não classificadas, de uso autorizado. Imagem anotada de avaliação de danos: Departamento de Defesa dos EUA. Mapa de calor de atividades físicas: © Strava 2017, Mapbox, OpenStreetMap, DigitalGlobe. As demais ilustrações são sintéticas, desenhadas para este aplicativo, e não representam áreas reais.</p></section>`;
